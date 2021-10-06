@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "660866857427",
+    "firebase_url": "https://mania-9c323.firebaseio.com",
+    "project_id": "mania-9c323",
+    "storage_bucket": "mania-9c323.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:660866857427:android:cf1d6265da04d94ac35726",
+        "android_client_info": {
+          "package_name": "com.krynit.mania"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "660866857427-56t6h75ncves6cks6ir27n8nh5nqs06g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBVWqT70OEhLHFRuMCT4ccDqnaSXKZL0uI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "660866857427-56t6h75ncves6cks6ir27n8nh5nqs06g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
