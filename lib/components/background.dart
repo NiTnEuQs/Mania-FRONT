@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:mania/resources/dimensions.dart';
 
 class Background extends StatelessWidget {
-  Background({Key key, this.child, this.radius, this.hasBar});
+  Background({Key? key, this.child, this.radius, this.hasBar});
 
-  final Widget child;
-  final BorderRadiusGeometry radius;
-  final bool hasBar;
+  final Widget? child;
+  final BorderRadiusGeometry? radius;
+  final bool? hasBar;
 
   @override
   Widget build(BuildContext context) {

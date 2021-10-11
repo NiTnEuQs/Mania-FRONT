@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 class WhiteButton extends StatelessWidget {
-  WhiteButton(this.text, {Key key, this.onPressed});
+  WhiteButton(this.text, {Key? key, this.onPressed});
 
   final String text;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {

@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:mania/resources/dimensions.dart';
 
 class Bloc extends StatelessWidget {
-  Bloc({Key key, this.child, this.padding, this.shadow});
+  Bloc({Key? key, this.child, this.padding, this.shadow});
 
-  final Widget child;
-  final EdgeInsetsGeometry padding;
-  final bool shadow;
+  final Widget? child;
+  final EdgeInsetsGeometry? padding;
+  final bool? shadow;
 
   @override
   Widget build(BuildContext context) {

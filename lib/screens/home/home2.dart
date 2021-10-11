@@ -5,14 +5,14 @@ import 'package:mania/components/profil.dart';
 import 'package:mania/resources/colours.dart';
 import 'package:mania/resources/dimensions.dart';
 
-class HomeScreen extends StatefulWidget {
-  HomeScreen({Key? key}) : super(key: key);
+class Home2Screen extends StatefulWidget {
+  Home2Screen({Key? key}) : super(key: key);
 
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  _Home2ScreenState createState() => _Home2ScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _Home2ScreenState extends State<Home2Screen> {
   String _pseudo = "";
 
   final controller = PageController(

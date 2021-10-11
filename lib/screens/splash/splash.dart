@@ -3,7 +3,7 @@ import 'package:mania/components/background.dart';
 import 'package:mania/components/logo.dart';
 
 class SplashScreen extends StatefulWidget {
-  SplashScreen({Key key}) : super(key: key);
+  SplashScreen({Key? key}) : super(key: key);
 
   @override
   _SplashScreenState createState() => _SplashScreenState();

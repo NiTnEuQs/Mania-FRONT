@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 class Sizer extends StatelessWidget {
-  Sizer({Key key, this.child, this.width, this.height, this.padding, this.horizontalAlignment, this.verticalAlignment});
+  Sizer(this.child, {Key? key, this.width, this.height, this.padding, this.horizontalAlignment, this.verticalAlignment});
 
   final Widget child;
-  final SizeGeometry width, height;
-  final EdgeInsetsGeometry padding;
-  final MainAxisAlignment horizontalAlignment, verticalAlignment;
+  final SizeGeometry? width, height;
+  final EdgeInsetsGeometry? padding;
+  final MainAxisAlignment? horizontalAlignment, verticalAlignment;
 
   @override
   Widget build(BuildContext context) {

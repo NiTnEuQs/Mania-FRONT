@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:mania/resources/dimensions.dart';
 
 class NormalImage extends StatelessWidget {
-  NormalImage(this._image, {Key key, this.circle, this.width, this.height, this.onPressed});
+  NormalImage(this._image, {Key? key, this.circle, this.width, this.height, this.onPressed});
 
   final String _image;
-  final bool circle;
-  final double width, height;
-  final VoidCallback onPressed;
+  final bool? circle;
+  final double? width, height;
+  final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -31,11 +31,11 @@ class NormalImage extends StatelessWidget {
 }
 
 class RoundedImage extends StatelessWidget {
-  RoundedImage(this._image, {Key key, this.width, this.height, this.onPressed});
+  RoundedImage(this._image, {Key? key, this.width, this.height, this.onPressed});
 
   final String _image;
-  final double width, height;
-  final VoidCallback onPressed;
+  final double? width, height;
+  final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {

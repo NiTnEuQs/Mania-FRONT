@@ -3,7 +3,7 @@ import 'package:mania/components/bloc.dart';
 import 'package:mania/resources/dimensions.dart';
 
 class BottomProfil extends StatelessWidget {
-  BottomProfil({Key key});
+  BottomProfil({Key? key});
 
   @override
   Widget build(BuildContext context) {

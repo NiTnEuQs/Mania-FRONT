@@ -3,7 +3,7 @@ import 'package:mania/components/botprofil.dart';
 import 'package:mania/components/topprofil.dart';
 
 class Profil extends StatelessWidget {
-  // Profil({Key key, this.user});
+  // Profil({Key? key, this.user});
 
   // final User user;
 

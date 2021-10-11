@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 class Tags extends StatelessWidget {
-  Tags(this.tags, {Key key, this.textColor, this.backgroundColor});
+  Tags(this.tags, {Key? key, this.textColor, this.backgroundColor});
 
   final List<String> tags;
-  final Color textColor, backgroundColor;
+  final Color? textColor, backgroundColor;
 
   @override
   Widget build(BuildContext context) {

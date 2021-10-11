@@ -5,10 +5,10 @@ import 'package:mania/resources/colours.dart';
 import 'package:mania/resources/dimensions.dart';
 
 class CleanBar extends StatelessWidget implements PreferredSizeWidget {
-  CleanBar({Key key, this.title, this.displayBack, this.displayProfil});
+  CleanBar({Key? key, this.title, this.displayBack, this.displayProfil});
 
-  final String title;
-  final bool displayBack, displayProfil;
+  final String? title;
+  final bool? displayBack, displayProfil;
 
   @override
   Widget build(BuildContext context) {

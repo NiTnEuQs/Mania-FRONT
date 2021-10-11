@@ -1,135 +1,141 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mania/components/background.dart';
-import 'package:mania/components/image.dart';
+import 'package:mania/components/bloc.dart';
+import 'package:mania/components/greyinput.dart';
 import 'package:mania/components/logo.dart';
-import 'package:mania/components/roundoutline.dart';
-import 'package:mania/components/strokystring.dart';
-import 'package:mania/components/whitebutton.dart';
-import 'package:mania/components/whiteinput.dart';
-import 'package:mania/components/whitetext.dart';
 import 'package:mania/resources/dimensions.dart';
-import 'package:mania/resources/strings.dart';
 import 'package:mania/theme/style.dart';
 
 class Login2Screen extends StatefulWidget {
-  Login2Screen({Key key}) : super(key: key);
+  Login2Screen({Key? key}) : super(key: key);
 
   @override
   _Login2ScreenState createState() => _Login2ScreenState();
 }
 
 class _Login2ScreenState extends State<Login2Screen> {
-  String login;
-  String password;
+  String login = "";
+  String password = "";
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true,
       body: Background(
-        hasBar: false,
         child: Container(
           margin: const EdgeInsets.all(Dimens.sideMargin),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Container(
-                margin: const EdgeInsets.only(top: Dimens.sideMargin, left: Dimens.sideMargin),
-                height: 100,
-                width: 100,
+                margin: const EdgeInsets.symmetric(horizontal: 82.0),
                 child: Logo(),
               ),
               Expanded(
                 child: Container(
                   margin: const EdgeInsets.all(Dimens.sideMargin),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 20.0),
-                    child: Container(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Container(
-                            height: 300,
-                            margin: const EdgeInsets.only(top: 48.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  child: Bloc(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 20.0),
+                      child: Container(
+                        width: double.infinity,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text(
+                              'Sign in',
+                              style: title(),
+                            ),
+                            Container(
+                              width: 300.0,
+                              child: GreyInput(
+                                value: login,
+                                placeholder: 'Login',
+                              ),
+                            ),
+                            Container(
+                              width: 300.0,
+                              child: GreyInput(
+                                value: password,
+                                placeholder: 'Password',
+                                isPassword: true,
+                              ),
+                            ),
+                            Text(
+                              'Forgot password ?',
+                              style: text(bold: FontWeight.w500),
+                            ),
+                            RaisedButton(
+                              onPressed: onLoginPressed,
+                              color: Theme.of(context).primaryColor,
+                              child: Text(
+                                'Login',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                            Text(
+                              'Or login with',
+                              style: text(),
+                            ),
+                            Container(
+                              width: 150.0,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Material(
+                                    elevation: 4.0,
+                                    shape: CircleBorder(),
+                                    clipBehavior: Clip.hardEdge,
+                                    color: Colors.transparent,
+                                    shadowColor: Colors.transparent,
+                                    child: Ink.image(
+                                      image: AssetImage('assets/images/facebook.png'),
+                                      width: Dimens.logoSize,
+                                      height: Dimens.logoSize,
+                                      fit: BoxFit.cover,
+                                      child: InkWell(
+                                        onTap: onFacebookPressed,
+                                      ),
+                                    ),
+                                  ),
+                                  Material(
+                                    elevation: 4.0,
+                                    shape: CircleBorder(),
+                                    clipBehavior: Clip.hardEdge,
+                                    color: Colors.transparent,
+                                    shadowColor: Colors.transparent,
+                                    child: Ink.image(
+                                      image: AssetImage('assets/images/google.png'),
+                                      width: Dimens.logoSize,
+                                      height: Dimens.logoSize,
+                                      fit: BoxFit.cover,
+                                      child: InkWell(
+                                        onTap: onGooglePressed,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
                               children: <Widget>[
                                 Text(
-                                  Strings.textSignIn.toUpperCase(),
-                                  style: title(color: Colors.white, bold: FontWeight.w200),
+                                  "Don't have an account ? ",
+                                  style: text(),
                                 ),
-                                WhiteInput(
-                                  value: login,
-                                  placeholder: Strings.textLogin,
-                                ),
-                                WhiteInput(
-                                  value: password,
-                                  placeholder: Strings.textPassword,
-                                  isPassword: true,
-                                ),
-                                WhiteText(Strings.textForgotPassword, bold: true),
-                                WhiteButton(
-                                  Strings.textLogin,
-                                  onPressed: onLoginPressed,
-                                ),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            height: 150,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                StrokyString(Strings.textOr.toUpperCase()),
-                                Container(
-                                  width: 200.0,
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: <Widget>[
-                                      RoundOutline(
-                                        height: Dimens.logoSize,
-                                        width: Dimens.logoSize,
-                                        child: RoundedImage(
-                                          'assets/images/facebook.png',
-                                          onPressed: onFacebookPressed,
-                                        ),
-                                      ),
-                                      RoundOutline(
-                                        height: Dimens.logoSize,
-                                        width: Dimens.logoSize,
-                                        child: RoundedImage(
-                                          'assets/images/google.png',
-                                          onPressed: onGooglePressed,
-                                        ),
-                                      ),
-                                      RoundOutline(
-                                        height: Dimens.logoSize,
-                                        width: Dimens.logoSize,
-                                        padding: const EdgeInsets.all(10.0),
-                                        child: NormalImage(
-                                          'assets/images/twitch.png',
-                                          onPressed: onTwitchPressed,
-                                        ),
-                                      ),
-                                    ],
+                                InkWell(
+                                  onTap: onSignUpPressed,
+                                  child: Text(
+                                    'Sign up',
+                                    style: text(bold: FontWeight.w700),
                                   ),
                                 ),
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: <Widget>[
-                                    WhiteText(Strings.textDontHaveAccount + " "),
-                                    InkWell(
-                                      onTap: onSignUpPressed,
-                                      child: WhiteText(Strings.textSignUp, bolder: true),
-                                    ),
-                                  ],
-                                ),
                               ],
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -152,13 +158,17 @@ class _Login2ScreenState extends State<Login2Screen> {
 
   onGooglePressed() {
     print('Google');
-  }
 
-  onTwitchPressed() {
-    print('Google');
+    FirebaseAuth auth = FirebaseAuth.instance;
   }
 
   onSignUpPressed() {
     print('Sign up');
   }
+
+// @override
+// void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+//   super.debugFillProperties(properties);
+//   properties.add(StringProperty('password', password));
+// }
 }

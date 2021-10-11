@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
 class RoundOutline extends StatelessWidget {
-  RoundOutline({Key key, this.child, this.color, this.width, this.height, this.padding, this.onPressed});
+  RoundOutline({Key? key, this.child, this.color, this.width, this.height, this.padding, this.onPressed});
 
-  final Widget child;
-  final Color color;
-  final double width, height;
-  final EdgeInsetsGeometry padding;
-  final VoidCallback onPressed;
+  final Widget? child;
+  final Color? color;
+  final double? width, height;
+  final EdgeInsetsGeometry? padding;
+  final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {

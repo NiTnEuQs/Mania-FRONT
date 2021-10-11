@@ -3,13 +3,13 @@ import 'package:mania/resources/colours.dart';
 import 'package:mania/resources/dimensions.dart';
 
 class WhiteInput extends StatelessWidget {
-  WhiteInput({Key key, this.value, this.placeholder, this.isPassword});
+  WhiteInput({Key? key, this.value, this.placeholder, this.isPassword});
 
-  final String value;
-  final String placeholder;
-  final bool isPassword;
+  final String? value;
+  final String? placeholder;
+  final bool? isPassword;
 
-  TextEditingController _controller;
+  late TextEditingController _controller;
 
   @override
   Widget build(BuildContext context) {

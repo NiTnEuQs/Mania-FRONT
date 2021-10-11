@@ -7,7 +7,7 @@ import 'package:mania/components/whitetext.dart';
 import 'package:mania/resources/dimensions.dart';
 
 class TopProfil extends StatelessWidget {
-  TopProfil({Key key});
+  TopProfil({Key? key});
 
   @override
   Widget build(BuildContext context) {

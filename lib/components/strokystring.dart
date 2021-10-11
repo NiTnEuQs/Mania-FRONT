@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:mania/theme/style.dart';
 
 class StrokyString extends StatelessWidget {
-  StrokyString(this._text, {Key key, this.color, this.textColor, this.inIndent, this.outIndent});
+  StrokyString(this._text, {Key? key, this.color, this.textColor, this.inIndent, this.outIndent});
 
   final String _text;
-  final Color color, textColor;
-  final double inIndent, outIndent;
+  final Color? color, textColor;
+  final double? inIndent, outIndent;
 
   @override
   Widget build(BuildContext context) {
