@@ -1,0 +1,97 @@
+{
+  "@@locale": "en",
+  "screen_related__": "--------------------------------------------------",
+  "screen_mainMenu_title": "Your list",
+  "screen_followings_title": "{pseudo}'s followings",
+  "screen_followers_title": "{pseudo}'s followers",
+  "text____________": "--------------------------------------------------",
+  "text_editProfile": "Edit profile",
+  "text_editionProfile": "Profile edition",
+  "text_noMessage": "No message",
+  "text_noUser": "No user",
+  "text_emptyList": "Empty list",
+  "text_errorOccurred": "An error occurred",
+  "text_profile": "Profile",
+  "text_settings": "Settings",
+  "text_logout": "Logout",
+  "text_follow": "Follow",
+  "text_unfollow": "Unfollow",
+  "text_search": "Search",
+  "text_message": "Message",
+  "text_publication": "Publication",
+  "text_publish": "Publish",
+  "text_save": "Save",
+  "placeholders____": "--------------------------------------------------",
+  "placeholder_writeYourMessage": "Write your message here",
+  "placeholder_writeADescription": "Write a description",
+  "params__________": "--------------------------------------------------",
+  "isNull": "{value} is null",
+  "follower": "{count, plural, =0{{count} follower} other{{count} followers}}",
+  "following": "{count, plural, =0{{count} following} other{{count} followings}}",
+  "comment": "{count, plural, =0{{count} comment} other{{count} comments}}",
+  "view": "{count, plural, =0{{count} view} other{{count} views}}",
+  "functions_______": "--------------------------------------------------",
+  "@screen_followings_title": {
+    "description": "Followings list",
+    "placeholders": {
+      "pseudo": {
+        "type": "String",
+        "example": "Bob"
+      }
+    }
+  },
+  "@screen_followers_title": {
+    "description": "Followers list",
+    "placeholders": {
+      "pseudo": {
+        "type": "String",
+        "example": "Bob"
+      }
+    }
+  },
+  "@isNull": {
+    "description": "Is the value null or not",
+    "placeholders": {
+      "value": {
+        "type": "String",
+        "example": "Bob"
+      }
+    }
+  },
+  "@follower": {
+    "description": "Follower",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "compact"
+      }
+    }
+  },
+  "@following": {
+    "description": "Following",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "compact"
+      }
+    }
+  },
+  "@comment": {
+    "description": "Comment",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "compact"
+      }
+    }
+  },
+  "@view": {
+    "description": "View",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "compact"
+      }
+    }
+  }
+}

@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:mania/resources/dimensions.dart';
 
 class NormalImage extends StatelessWidget {
-  NormalImage(this._image, {Key? key, this.circle, this.width, this.height, this.onPressed});
+  NormalImage(this._image, {Key? key, this.isUrl = false, this.circle, this.width, this.height, this.onPressed});
 
-  final String _image;
+  final String? _image;
+  final bool isUrl;
   final bool? circle;
   final double? width, height;
   final VoidCallback? onPressed;
@@ -17,8 +18,9 @@ class NormalImage extends StatelessWidget {
       clipBehavior: Clip.hardEdge,
       color: Colors.transparent,
       shadowColor: Colors.transparent,
+      // child: isUrl ? Image.network(_image) : Image.asset(_image),
       child: Ink.image(
-        image: AssetImage(_image),
+        image: isUrl ? Image.network(_image ?? "").image : Image.asset(_image ?? "").image,
         width: width ?? Dimens.logoSize,
         height: height ?? Dimens.logoSize,
         fit: BoxFit.cover,
@@ -31,9 +33,10 @@ class NormalImage extends StatelessWidget {
 }
 
 class RoundedImage extends StatelessWidget {
-  RoundedImage(this._image, {Key? key, this.width, this.height, this.onPressed});
+  RoundedImage(this._image, {Key? key, this.isUrl = false, this.width, this.height, this.onPressed});
 
-  final String _image;
+  final String? _image;
+  final bool isUrl;
   final double? width, height;
   final VoidCallback? onPressed;
 
@@ -41,6 +44,7 @@ class RoundedImage extends StatelessWidget {
   Widget build(BuildContext context) {
     return NormalImage(
       _image,
+      isUrl: isUrl,
       circle: true,
       width: width ?? Dimens.logoSize,
       height: height ?? Dimens.logoSize,

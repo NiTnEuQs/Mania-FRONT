@@ -2,26 +2,32 @@ import 'package:flutter/material.dart';
 import 'package:mania/resources/colours.dart';
 import 'package:mania/resources/dimensions.dart';
 
-class WhiteInput extends StatelessWidget {
-  WhiteInput({Key? key, this.value, this.placeholder, this.isPassword});
+class WhiteInput extends StatefulWidget {
+  WhiteInput({Key? key, this.value, this.placeholder, this.maxLines, this.isPassword});
 
   final String? value;
   final String? placeholder;
+  final int? maxLines;
   final bool? isPassword;
 
+  @override
+  State<WhiteInput> createState() => _WhiteInputState();
+}
+
+class _WhiteInputState extends State<WhiteInput> {
   late TextEditingController _controller;
 
   @override
   Widget build(BuildContext context) {
     _controller = TextEditingController(
-      text: value ?? '',
+      text: widget.value ?? '',
     );
 
     return Container(
       width: 300.0,
       child: TextField(
         decoration: InputDecoration(
-          hintText: placeholder ?? '',
+          hintText: widget.placeholder ?? '',
           hintStyle: TextStyle(
             color: Colours.hint,
           ),
@@ -31,7 +37,8 @@ class WhiteInput extends StatelessWidget {
             borderRadius: BorderRadius.all(Radius.circular(Dimens.greyInputCornerRadius)),
           ),
         ),
-        obscureText: isPassword ?? false,
+        maxLines: (widget.isPassword ?? true) ? 1 : widget.maxLines,
+        obscureText: widget.isPassword ?? false,
         controller: _controller,
       ),
     );

@@ -1,3 +1,6 @@
+# Retrofit
+*.g.dart
+
 # Miscellaneous
 *.class
 *.log

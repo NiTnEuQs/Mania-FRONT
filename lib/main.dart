@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:mania/app/System.dart';
 import 'package:mania/resources/strings.dart';
 import 'package:mania/routes.dart';
 import 'package:mania/theme/theme.dart';
+
+final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
 
 void main() {
   runApp(MyApp());
@@ -11,13 +15,26 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    System.initialize(context);
     System.transparentStatusBar();
+    System.portraitOnly(upsideDown: true);
 
     return MaterialApp(
       title: Strings.appName,
       theme: appTheme(),
       initialRoute: '/',
-      routes: routes,
+      onGenerateRoute: routes,
+      navigatorObservers: [routeObserver],
+      localizationsDelegates: [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [
+        Locale('en', ''),
+        Locale('fr', ''),
+      ],
     );
   }
 }

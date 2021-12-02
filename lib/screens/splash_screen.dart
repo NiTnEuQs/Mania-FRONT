@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:mania/components/background.dart';
 import 'package:mania/components/logo.dart';
+import 'package:mania/screens/login_screen.dart';
+import 'package:mania/utils/authentication.dart';
 
 class SplashScreen extends StatefulWidget {
   SplashScreen({Key? key}) : super(key: key);
@@ -10,16 +14,13 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  int _nextScreenRequirements = 0;
+
   @override
   void initState() {
     super.initState();
 
-    Future.delayed(
-      Duration(milliseconds: 1500),
-      () {
-        Navigator.pushReplacementNamed(context, '/login');
-      },
-    );
+    initialize();
   }
 
   @override
@@ -34,5 +35,24 @@ class _SplashScreenState extends State<SplashScreen> {
         ),
       ),
     );
+  }
+
+  initialize() {
+    Future.delayed(Duration(seconds: 1), () {
+      initializeFirebase();
+    });
+  }
+
+  initializeFirebase() {
+    _nextScreenRequirements++;
+    Authentication.initializeFirebase(context: context).then((value) {
+      onInitializationFinished();
+    });
+  }
+
+  onInitializationFinished() {
+    if (--_nextScreenRequirements == 0) {
+      LoginScreen.loadNextScreen(context);
+    }
   }
 }

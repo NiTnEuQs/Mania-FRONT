@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:mania/resources/colours.dart';
 
 ThemeData appTheme() {
   return ThemeData(
-    primarySwatch: Colors.orange,
-    primaryColor: Colors.deepOrange,
-    accentColor: Colors.deepOrangeAccent,
-    hintColor: Colors.white,
-    dividerColor: Colors.white,
-    buttonColor: Colors.white,
-    scaffoldBackgroundColor: Colors.black,
-    canvasColor: Colors.black,
+    primarySwatch: Colours.primarySwatch,
+    primaryColor: Colours.primaryColor,
+    colorScheme: ColorScheme.light(
+      primary: Colours.primaryColor,
+      onPrimary: Colors.white,
+      secondary: Colours.accentColor,
+      onSecondary: Colors.white,
+    ),
+    hintColor: Colours.hintColor,
+    dividerColor: Colours.dividerColor,
+    scaffoldBackgroundColor: Colours.scaffoldColor,
+    canvasColor: Colours.canvasColor,
     visualDensity: VisualDensity.adaptivePlatformDensity,
   );
 }

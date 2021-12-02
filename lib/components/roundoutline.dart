@@ -19,7 +19,7 @@ class RoundOutline extends StatelessWidget {
         shape: BoxShape.circle,
       ),
       child: Padding(
-        padding: padding ?? const EdgeInsets.all(8.0),
+        padding: padding ?? const EdgeInsets.all(0.0),
         child: InkWell(
           onTap: onPressed,
           child: child,
