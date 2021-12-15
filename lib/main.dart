@@ -5,6 +5,7 @@ import 'package:mania/app/System.dart';
 import 'package:mania/resources/strings.dart';
 import 'package:mania/routes.dart';
 import 'package:mania/theme/theme.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
 
@@ -26,6 +27,7 @@ class MyApp extends StatelessWidget {
       onGenerateRoute: routes,
       navigatorObservers: [routeObserver],
       localizationsDelegates: [
+        RefreshLocalizations.delegate,
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
@@ -35,6 +37,9 @@ class MyApp extends StatelessWidget {
         Locale('en', ''),
         Locale('fr', ''),
       ],
+      // localeResolutionCallback: (Locale? locale, Iterable<Locale> supportedLocales) {
+      //   return locale;
+      // },
     );
   }
 }

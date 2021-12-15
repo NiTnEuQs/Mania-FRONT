@@ -8,7 +8,7 @@ import 'package:mania/models/ApiUser.dart';
 import 'package:mania/models/GenericResponse.dart';
 
 class Requests {
-  static Future<GenericResponse<ApiUser>> updateUserInformations(BuildContext context) {
+  static Future<GenericResponse<ApiUser>> getUserInformations(BuildContext context) {
     var completer = Completer<GenericResponse<ApiUser>>();
 
     if (Registry.firebaseUser != null) {
@@ -18,13 +18,60 @@ class Requests {
 
           completer.complete(GenericResponse<ApiUser>(success: true, response: Registry.apiUser));
         } else {
-          completer.complete(GenericResponse<ApiUser>(success: false));
+          RestClient.service.createUserInformationFromFirebaseUser(Registry.firebaseUser!.uid).then((value) {
+            if (value.success) {
+              Registry.apiUser = value.response;
+
+              completer.complete(GenericResponse<ApiUser>(success: true, response: Registry.apiUser));
+            } else {
+              completer.complete(GenericResponse<ApiUser>(success: false));
+            }
+          }).catchError((error) {
+            completer.completeError(error);
+          });
+        }
+      }).catchError((error) {
+        completer.completeError(error);
+      });
+    } else if (Registry.twitchUser != null) {
+      RestClient.service.getUserInformationWithTwitchId(Registry.twitchUser!.id).then((value) {
+        if (value.success) {
+          Registry.apiUser = value.response;
+
+          RestClient.service
+              .editProfile(Registry.apiUser!.id, pseudo: Registry.twitchUser!.displayName, avatarUrl: Registry.twitchUser!.profileImageUrl)
+              .then((value) {
+            completer.complete(GenericResponse<ApiUser>(success: true, response: Registry.apiUser));
+          }).catchError((error) {
+            completer.complete(GenericResponse<ApiUser>(success: false));
+          });
+        } else {
+          RestClient.service
+              .createUserInformationFromTwitchUser(
+            Registry.twitchUser!.id,
+            Registry.twitchUser!.login,
+            Registry.twitchUser!.displayName,
+            Registry.twitchUser!.email,
+            Registry.twitchUser!.description,
+            Registry.twitchUser!.profileImageUrl,
+          )
+              .then((value) {
+            if (value.success) {
+              Registry.apiUser = value.response;
+
+              completer.complete(GenericResponse<ApiUser>(success: true, response: Registry.apiUser));
+            } else {
+              completer.complete(GenericResponse<ApiUser>(success: false));
+            }
+          }).catchError((error) {
+            completer.completeError(error);
+          });
         }
       }).catchError((error) {
         completer.completeError(error);
       });
     } else {
-      completer.complete(GenericResponse<ApiUser>(success: false, message: trans(context)!.isNull("Registry.firebaseUser")));
+      completer.complete(GenericResponse<ApiUser>(success: false, message: trans(context)!.isNull("Registry.firebaseUser or Registry.twitchUser")));
     }
 
     return completer.future;

@@ -7,6 +7,7 @@ import 'package:mania/components/whitetext.dart';
 import 'package:mania/resources/colours.dart';
 import 'package:mania/resources/dimensions.dart';
 import 'package:mania/resources/herotags.dart';
+import 'package:mania/utils/StringUtils.dart';
 
 class ManiaBar extends StatelessWidget implements PreferredSizeWidget {
   ManiaBar({Key? key, this.title, this.onSearchValueChanged, this.leftItem, this.rightItem});
@@ -48,13 +49,26 @@ class ManiaBar extends StatelessWidget implements PreferredSizeWidget {
                         onValueChanged: onSearchValueChanged,
                       ),
                     )
-                  : WhiteText(
-                      title ?? '',
-                      textAlign: TextAlign.center,
-                      fontSize: Dimens.appbarTitleSize,
-                      maxLines: 1,
-                      overflow: TextOverflow.visible,
-                    ),
+                  : (!isStringEmpty(title)
+                      ? Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxHeight: 26,
+                            ),
+                            child: FittedBox(
+                              fit: BoxFit.contain,
+                              child: WhiteText(
+                                title ?? '',
+                                textAlign: TextAlign.center,
+                                fontSize: Dimens.appbarTitleSize,
+                                maxLines: 1,
+                                overflow: TextOverflow.visible,
+                              ),
+                            ),
+                          ),
+                        )
+                      : Container()),
             ),
           ),
           MaterialHero(

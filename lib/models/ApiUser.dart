@@ -37,4 +37,14 @@ class ApiUser {
   factory ApiUser.fromJson(Map<String, dynamic> json) => _$ApiUserFromJson(json);
 
   Map<String, dynamic> toJson() => _$ApiUserToJson(this);
+
+  @override
+  int get hashCode => id.hashCode;
+
+  @override
+  bool operator ==(Object other) {
+    if (!(other is ApiUser)) return false;
+
+    return this.id == other.id;
+  }
 }

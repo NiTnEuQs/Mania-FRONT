@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:mania/app/Prefs.dart';
 import 'package:mania/components/background.dart';
 import 'package:mania/components/logo.dart';
+import 'package:mania/handlers/FirebaseHandler.dart';
+import 'package:mania/handlers/TwitchHandler.dart';
 import 'package:mania/screens/login_screen.dart';
-import 'package:mania/utils/authentication.dart';
 
 class SplashScreen extends StatefulWidget {
   SplashScreen({Key? key}) : super(key: key);
@@ -39,15 +41,29 @@ class _SplashScreenState extends State<SplashScreen> {
 
   initialize() {
     Future.delayed(Duration(seconds: 1), () {
-      initializeFirebase();
+      Prefs.initialize().then((value) {
+        // initializeDateFormatting(System.countryCode, null).then((value) {
+        initializeFirebase();
+        initializeTwitch();
+        // });
+      });
     });
   }
 
   initializeFirebase() {
     _nextScreenRequirements++;
-    Authentication.initializeFirebase(context: context).then((value) {
+    FirebaseHandler.initialize(context: context).then((value) {
       onInitializationFinished();
     });
+  }
+
+  initializeTwitch() {
+    _nextScreenRequirements++;
+    TwitchHandler.initialize(context: context).then((success) {
+      if (success) {
+        onInitializationFinished();
+      }
+    }).catchError((error) {});
   }
 
   onInitializationFinished() {

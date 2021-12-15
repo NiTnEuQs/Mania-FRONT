@@ -21,4 +21,5 @@ class HeroTags {
   static const String MESSAGE_NB_COMMENTS = "message_nb_comments";
   static const String MESSAGE_NB_VIEWS = "message_nb_views";
   static const String MESSAGE_TIMESTAMP = "message_timestamp";
+  static const String MESSAGE_WRITE_FIELD = "mesage_write_field";
 }

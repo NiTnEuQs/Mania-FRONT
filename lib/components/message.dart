@@ -4,13 +4,14 @@ import 'package:mania/components/bloc.dart';
 import 'package:mania/components/image.dart';
 import 'package:mania/components/material_hero.dart';
 import 'package:mania/components/whitetext.dart';
+import 'package:mania/extensions/DateTimeExtension.dart';
 import 'package:mania/models/ApiMessage.dart';
 import 'package:mania/models/ApiUser.dart';
 import 'package:mania/resources/dimensions.dart';
 import 'package:mania/resources/herotags.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-class Message extends StatelessWidget {
+class Message extends StatefulWidget {
   Message(
     this.message, {
     Key? key,
@@ -31,44 +32,57 @@ class Message extends StatelessWidget {
   final Function(ApiUser)? onUserPressed;
 
   @override
+  State<Message> createState() => _MessageState();
+}
+
+class _MessageState extends State<Message> {
+  @override
   Widget build(BuildContext context) {
+    String _messageDate =
+        widget.extended ? widget.message.timestamp.toCorrectLocal().toCorrectFormat() : timeago.format(widget.message.timestamp.toCorrectLocal());
+
     return Container(
       color: Colors.transparent,
-      padding: extended ? const EdgeInsets.all(0) : const EdgeInsets.all(6.0),
+      padding: widget.extended ? const EdgeInsets.all(0) : const EdgeInsets.all(Dimens.halfMargin),
       child: Bloc(
-        onTap: (onMessagePressed != null) ? () => onMessagePressed!(message) : null,
-        color: extended ? Colors.transparent : Colors.white,
-        shadow: !extended,
-        padding: extended ? const EdgeInsets.all(0) : const EdgeInsets.all(16.0),
+        onTap: (widget.onMessagePressed != null) ? () => widget.onMessagePressed!(widget.message) : null,
+        color: widget.extended ? Colors.transparent : Colors.white,
+        shadow: !widget.extended,
+        padding: widget.extended ? const EdgeInsets.all(0) : const EdgeInsets.all(16.0),
         child: Column(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            if ((displayAvatar ?? true) || (displayPseudo ?? true))
+            if ((widget.displayAvatar ?? true) || (widget.displayPseudo ?? true))
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  if (displayAvatar ?? true)
+                  if (widget.displayAvatar ?? true)
                     MaterialHero(
-                      tag: extended ? '${HeroTags.PROFILE_AVATAR}${message.user.id}' : '${HeroTags.MESSAGE_AVATAR}${message.id}',
+                      tag: widget.extended ? '${HeroTags.PROFILE_AVATAR}${widget.message.user.id}' : '${HeroTags.MESSAGE_AVATAR}${widget.message.id}',
                       child: RoundedImage(
-                        message.user.imageUrl,
-                        onPressed: onUserPressed != null ? () => onUserPressed!(message.user) : null,
-                        width: extended ? Dimens.extendedMessageAvatarSize : Dimens.messageAvatarSize,
-                        height: extended ? Dimens.extendedMessageAvatarSize : Dimens.messageAvatarSize,
+                        widget.message.user.imageUrl,
+                        onPressed: () {
+                          if (widget.onUserPressed != null)
+                            widget.onUserPressed!(widget.message.user);
+                          else
+                            defaultOnUserPressed(context, widget.message.user);
+                        },
+                        width: widget.extended ? Dimens.extendedMessageAvatarSize : Dimens.messageAvatarSize,
+                        height: widget.extended ? Dimens.extendedMessageAvatarSize : Dimens.messageAvatarSize,
                         isUrl: true,
                       ),
                     ),
                   SizedBox(width: Dimens.margin),
-                  if (displayPseudo ?? true)
+                  if (widget.displayPseudo ?? true)
                     Expanded(
                       child: MaterialHero(
-                        tag: extended ? '${HeroTags.PROFILE_PSEUDO}${message.user.id}' : '${HeroTags.MESSAGE_PSEUDO}${message.id}',
+                        tag: widget.extended ? '${HeroTags.PROFILE_PSEUDO}${widget.message.user.id}' : '${HeroTags.MESSAGE_PSEUDO}${widget.message.id}',
                         child: WhiteText(
-                          message.user.pseudo,
-                          onPressed: onUserPressed != null ? () => onUserPressed!(message.user) : null,
-                          color: extended ? Colors.white : Colors.black,
+                          widget.message.user.pseudo,
+                          onPressed: widget.onUserPressed != null ? () => widget.onUserPressed!(widget.message.user) : null,
+                          color: widget.extended ? Colors.white : Colors.black,
                           boldest: true,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -77,46 +91,46 @@ class Message extends StatelessWidget {
                     ),
                 ],
               ),
-            SizedBox(height: (displayAvatar ?? true) || (displayPseudo ?? true) ? Dimens.marginDouble : 0),
+            SizedBox(height: (widget.displayAvatar ?? true) || (widget.displayPseudo ?? true) ? Dimens.marginDouble : 0),
             MaterialHero(
-              tag: '${HeroTags.MESSAGE_TEXT}${message.id}',
+              tag: '${HeroTags.MESSAGE_TEXT}${widget.message.id}',
               child: WhiteText(
-                message.text,
-                color: extended ? Colors.white : Colors.black,
-                fontDimension: extended ? TextDimension.XXL : null,
+                widget.message.text,
+                color: widget.extended ? Colors.white : Colors.black,
+                fontDimension: widget.extended ? TextDimension.XXL : null,
               ),
             ),
             SizedBox(height: Dimens.marginDouble),
-            if ((displayNbComments ?? true) || (displayTimestamp ?? true))
+            if ((widget.displayNbComments ?? true) || (widget.displayTimestamp ?? true))
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  if (displayNbComments ?? true)
+                  if (widget.displayNbComments ?? true)
                     MaterialHero(
-                      tag: '${HeroTags.MESSAGE_NB_COMMENTS}${message.id}',
+                      tag: '${HeroTags.MESSAGE_NB_COMMENTS}${widget.message.id}',
                       child: WhiteText(
-                        trans(context)!.comment(message.nbComments ?? 0),
-                        color: extended ? Colors.white : Colors.grey,
+                        trans(context)!.comment(widget.message.nbComments ?? 0),
+                        color: widget.extended ? Colors.white : Colors.grey,
                         fontDimension: TextDimension.XS,
                         bold: true,
                       ),
                     ),
-                  if (displayNbViews ?? true)
+                  if (widget.displayNbViews ?? true)
                     MaterialHero(
-                      tag: '${HeroTags.MESSAGE_NB_VIEWS}${message.id}',
+                      tag: '${HeroTags.MESSAGE_NB_VIEWS}${widget.message.id}',
                       child: WhiteText(
-                        trans(context)!.view(message.nbViews ?? 0),
-                        color: extended ? Colors.white : Colors.grey,
+                        trans(context)!.view(widget.message.nbViews ?? 0),
+                        color: widget.extended ? Colors.white : Colors.grey,
                         fontDimension: TextDimension.XS,
                         bold: true,
                       ),
                     ),
-                  if (displayTimestamp ?? true)
+                  if (widget.displayTimestamp ?? true)
                     MaterialHero(
-                      tag: '${HeroTags.MESSAGE_TIMESTAMP}${message.id}',
+                      tag: '${HeroTags.MESSAGE_TIMESTAMP}${widget.message.id}',
                       child: WhiteText(
-                        extended ? message.timestamp.toLocal().toString() : timeago.format(message.timestamp),
-                        color: extended ? Colors.white : Colors.grey,
+                        _messageDate,
+                        color: widget.extended ? Colors.white : Colors.grey,
                         fontDimension: TextDimension.XS,
                         bold: true,
                       ),
@@ -127,5 +141,9 @@ class Message extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  defaultOnUserPressed(BuildContext context, ApiUser user) {
+    Navigator.pushNamed(context, '/profile', arguments: user);
   }
 }

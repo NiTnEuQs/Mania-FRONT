@@ -5,6 +5,7 @@ class Colours {
 
   static const MaterialColor primarySwatch = Colors.orange;
   static const Color primaryColor = Colors.deepOrange;
+  static const Color secondaryColor = Colors.orange;
   static const Color accentColor = Colors.deepOrangeAccent;
   static const Color hintColor = Colors.white;
   static const Color dividerColor = Colors.white;
@@ -18,6 +19,7 @@ class Colours {
   static const Color whiteInput = Color(0xFFFFFFFF);
   static const Color hint = Color(0xFFAAAAAA);
   static const Color text = Color(0xFF333333);
+  static const Color link = secondaryColor;
 
   static const Color appbarIcon = Colors.white;
   static const Color appbarIconBackground = Colors.black38;

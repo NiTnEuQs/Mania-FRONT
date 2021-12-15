@@ -61,7 +61,7 @@ class _TransparentInputState extends State<TransparentInput> {
                 : widget.minLines,
         maxLines: (widget.expands ?? false)
             ? null
-            : (widget.isPassword ?? true)
+            : (widget.isPassword ?? false)
                 ? 1
                 : widget.maxLines,
         obscureText: widget.isPassword ?? false,

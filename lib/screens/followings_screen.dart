@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mania/api/RestClient.dart';
+import 'package:mania/components/FutureWidget.dart';
 import 'package:mania/components/background.dart';
 import 'package:mania/components/list_users.dart';
 import 'package:mania/components/mania_bar.dart';
-import 'package:mania/components/whitetext.dart';
 import 'package:mania/custom/base_stateful_widget.dart';
 import 'package:mania/models/ApiUser.dart';
 import 'package:mania/models/GenericResponse.dart';
@@ -46,21 +46,14 @@ class _FollowingsScreenState extends LifecycleState<FollowingsScreen> {
           child: FutureBuilder<GenericResponse<List<ApiUser>>>(
             future: RestClient.service.getUserFollowings(_user.id),
             builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return ListUsers(snapshot.data!.response, onUserPressed: onUserPressed);
-              } else if (snapshot.hasError) {
-                return Center(child: WhiteText(trans(context)!.text_errorOccurred));
-              } else {
-                return Center(child: CircularProgressIndicator());
-              }
+              return FutureWidget(
+                snapshot,
+                child: ListUsers(snapshot.data?.response),
+              );
             },
           ),
         ),
       ),
     );
-  }
-
-  onUserPressed(ApiUser user) {
-    Navigator.pushNamed(context, "/profile", arguments: user);
   }
 }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mania/api/Requests.dart';
-import 'package:mania/app/Registry.dart';
 import 'package:mania/components/mania_bar.dart';
 import 'package:mania/custom/base_stateful_widget.dart';
 import 'package:mania/models/ApiUser.dart';
@@ -34,17 +33,11 @@ class _ProfileScreenState extends LifecycleState<ProfileScreen> {
       extendBodyBehindAppBar: true,
       appBar: ManiaBar(
         leftItem: ManiaBarItem.back(context),
-        rightItem: widget.user.id == Registry.apiUser?.id
-            ? ManiaBarItem(
-                icon: Icons.mode,
-                onItemPressed: onWriteMessagePressed,
-              )
-            : null,
       ),
       body: Column(
         children: <Widget>[
           TopProfile(userId: widget.user.id, onFollowPressed: onFollowPressed),
-          BotProfile(userId: widget.user.id, onMessagePressed: onMessagePressed),
+          BotProfile(userId: widget.user.id),
         ],
       ),
     );
@@ -53,10 +46,6 @@ class _ProfileScreenState extends LifecycleState<ProfileScreen> {
   onFollowPressed() {
     setState(() {});
     Requests.updateUserFollowings(context);
-  }
-
-  onMessagePressed(message) {
-    Navigator.pushNamed(context, "/message", arguments: message);
   }
 
   onWriteMessagePressed() {

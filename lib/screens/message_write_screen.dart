@@ -3,16 +3,16 @@ import 'package:mania/api/RestClient.dart';
 import 'package:mania/app/Registry.dart';
 import 'package:mania/app/Utils.dart';
 import 'package:mania/components/background.dart';
-import 'package:mania/components/image.dart';
+import 'package:mania/components/input_message.dart';
 import 'package:mania/components/mania_bar.dart';
 import 'package:mania/components/material_hero.dart';
-import 'package:mania/components/transparentinput.dart';
-import 'package:mania/components/whitebutton.dart';
 import 'package:mania/resources/dimensions.dart';
 import 'package:mania/resources/herotags.dart';
 
 class MessageWriteScreen extends StatefulWidget {
-  const MessageWriteScreen({Key? key}) : super(key: key);
+  const MessageWriteScreen({Key? key, this.parentMessageId}) : super(key: key);
+
+  final int? parentMessageId;
 
   @override
   _MessageWriteScreenState createState() => _MessageWriteScreenState();
@@ -32,40 +32,17 @@ class _MessageWriteScreenState extends State<MessageWriteScreen> {
       ),
       body: Background(
         shouldCountBar: true,
-        padding: const EdgeInsets.symmetric(horizontal: Dimens.marginDouble),
+        padding: const EdgeInsets.symmetric(vertical: Dimens.margin, horizontal: Dimens.margin),
         child: Column(
           children: [
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: Dimens.marginDouble),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    MaterialHero(
-                      tag: '${HeroTags.PROFILE_AVATAR}${Registry.apiUser?.id}',
-                      child: RoundedImage(
-                        Registry.apiUser?.imageUrl,
-                        isUrl: true,
-                        height: Dimens.profileAvatarSize,
-                        width: Dimens.profileAvatarSize,
-                      ),
-                    ),
-                    Expanded(
-                      child: TransparentInput(
-                        controller: _controller,
-                        expands: true,
-                        placeholder: trans(context)!.placeholder_writeYourMessage,
-                        keyboardType: TextInputType.multiline,
-                      ),
-                    ),
-                  ],
-                ),
+            MaterialHero(
+              tag: HeroTags.MESSAGE_WRITE_FIELD,
+              child: InputMessage(
+                controller: _controller,
+                autoFocus: true,
+                placeholder: trans(context)!.placeholder_writeYourMessage,
+                onSendMessagePressed: onPublishPressed,
               ),
-            ),
-            SizedBox(height: Dimens.marginDouble),
-            WhiteButton(
-              trans(context)!.text_publish,
-              onPressed: onPublishPressed,
             ),
           ],
         ),
@@ -73,9 +50,9 @@ class _MessageWriteScreenState extends State<MessageWriteScreen> {
     );
   }
 
-  onPublishPressed() {
+  onPublishPressed(String? message) {
     if (Registry.apiUser != null) {
-      RestClient.service.publishMessage(Registry.apiUser!.id, _controller.text).then((value) {
+      RestClient.service.publishMessage(Registry.apiUser!.id, _controller.text, parentMessageId: widget.parentMessageId).then((value) {
         if (value.success) {
           Navigator.pop(context);
         }

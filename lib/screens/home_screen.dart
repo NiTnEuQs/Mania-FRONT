@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mania/delegates/UsersSearchDelegate.dart';
 import 'package:mania/screens/main_menu_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -21,9 +22,10 @@ class _HomeScreenState extends State<HomeScreen> {
         body: MainMenuScreen(
           scaffoldKey: _mainMenuScaffoldKey,
           onMenuPressed: onMenuPressed,
+          onSearchPressed: onSearchPressed,
           onDrawerChanged: onDrawerChanged,
         ),
-        floatingActionButton: computedFloatingActionButton(),
+        // floatingActionButton: computedFloatingActionButton(),
       ),
     );
   }
@@ -65,6 +67,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   onMenuPressed() {
     _mainMenuScaffoldKey.currentState?.openDrawer();
+  }
+
+  onSearchPressed() {
+    showSearch(
+      context: context,
+      delegate: UsersSearchDelegate(),
+    );
   }
 
   onAddUserPressed() {

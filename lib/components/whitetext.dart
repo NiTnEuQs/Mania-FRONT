@@ -20,7 +20,7 @@ class WhiteText extends StatelessWidget {
     this.fontDimension,
   });
 
-  final String _text;
+  final String? _text;
   final TextStyle? style;
   final Color? color;
   final double? fontSize;
@@ -36,7 +36,7 @@ class WhiteText extends StatelessWidget {
     return InkWell(
       onTap: onPressed,
       child: Text(
-        _text,
+        _text ?? "",
         overflow: overflow,
         maxLines: maxLines,
         textAlign: textAlign ?? TextAlign.start,

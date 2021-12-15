@@ -42,7 +42,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
       extendBodyBehindAppBar: true,
       extendBody: true,
       appBar: ManiaBar(
-        title: trans(context)!.text_editionProfile,
+        title: trans(context)!.screen_editProfile_title,
         leftItem: ManiaBarItem.back(context),
       ),
       body: Background(
@@ -77,13 +77,12 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
               ],
             ),
             SizedBox(height: Dimens.marginDouble),
-            Expanded(
-              child: TransparentInput(
-                controller: _bioController,
-                expands: true,
-                placeholder: trans(context)!.placeholder_writeADescription,
-                keyboardType: TextInputType.multiline,
-              ),
+            TransparentInput(
+              controller: _bioController,
+              // expands: true,
+              placeholder: trans(context)!.placeholder_writeADescription,
+              keyboardType: TextInputType.multiline,
+              maxLines: null,
             ),
             SizedBox(height: Dimens.marginDouble),
             WhiteButton(
@@ -97,7 +96,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   }
 
   onAvatarPressed() {
-    pickImage();
+    // pickImage();
   }
 
   Future pickImage() async {

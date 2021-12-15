@@ -11,6 +11,7 @@ class ListUsers extends StatelessWidget {
     this.users, {
     Key? key,
     this.filterValue,
+    this.noDataColor = Colors.white,
     this.onFollowPressed,
     this.onUserPressed,
     this.onUserLongPressed,
@@ -18,6 +19,7 @@ class ListUsers extends StatelessWidget {
 
   final List<ApiUser>? users;
   final String? filterValue;
+  final Color noDataColor;
   final VoidCallback? onFollowPressed;
   final Function(ApiUser)? onUserPressed, onUserLongPressed;
 
@@ -26,7 +28,7 @@ class ListUsers extends StatelessWidget {
     List<ApiUser> users = this.users ?? List.empty(); //computeList();
 
     return users.length <= 0
-        ? Center(child: WhiteText(trans(context)!.text_noUser))
+        ? Center(child: WhiteText(trans(context)!.text_noUser, color: noDataColor))
         : ListView.separated(
             padding: EdgeInsets.all(0),
             itemCount: users.length,
@@ -35,7 +37,12 @@ class ListUsers extends StatelessWidget {
 
               return CollapsedProfil(
                 user: user,
-                onUserPressed: onUserPressed,
+                onUserPressed: (apiUser) {
+                  if (onUserPressed != null)
+                    onUserPressed!(apiUser);
+                  else
+                    defaultOnUserPressed(context, apiUser);
+                },
                 onUserLongPressed: onUserLongPressed,
               );
             },
@@ -58,5 +65,9 @@ class ListUsers extends StatelessWidget {
     }
 
     return updatedList;
+  }
+
+  defaultOnUserPressed(BuildContext context, ApiUser user) {
+    Navigator.pushNamed(context, "/profile", arguments: user);
   }
 }

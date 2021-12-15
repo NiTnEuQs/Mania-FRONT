@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mania/api/RestClient.dart';
+import 'package:mania/app/Registry.dart';
 import 'package:mania/components/background.dart';
 import 'package:mania/components/list_messages.dart';
 import 'package:mania/components/mania_bar.dart';
@@ -7,10 +8,10 @@ import 'package:mania/components/message.dart';
 import 'package:mania/components/whitetext.dart';
 import 'package:mania/custom/base_stateful_widget.dart';
 import 'package:mania/models/ApiMessage.dart';
-import 'package:mania/models/ApiUser.dart';
 import 'package:mania/models/GenericResponse.dart';
 import 'package:mania/resources/colours.dart';
 import 'package:mania/resources/dimensions.dart';
+import 'package:mania/utils/StringUtils.dart';
 
 class MessageScreen extends BaseStatefulWidget {
   MessageScreen(this.message, {Key? key}) : super(key: key);
@@ -22,6 +23,8 @@ class MessageScreen extends BaseStatefulWidget {
 }
 
 class _MessageScreenState extends LifecycleState<MessageScreen> {
+  TextEditingController _sendMessageController = new TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,7 +49,6 @@ class _MessageScreenState extends LifecycleState<MessageScreen> {
               extended: true,
               displayAvatar: true,
               displayPseudo: true,
-              onUserPressed: onUserPressed,
             ),
           ),
           Expanded(
@@ -56,8 +58,20 @@ class _MessageScreenState extends LifecycleState<MessageScreen> {
                   if (snapshot.hasData) {
                     return ListMessages(
                       snapshot.data?.response,
-                      onMessagePressed: onMessagePressed,
-                      onUserPressed: onUserPressed,
+                      noDataColor: Colors.black,
+                      parentMessageId: widget.message.id,
+                      displayWriteAMessage: true,
+                      sendMessageController: _sendMessageController,
+                      onSendMessagePressed: (message) {
+                        if (!isStringEmpty(message)) {
+                          RestClient.service.publishMessage(Registry.apiUser!.id, message!, parentMessageId: widget.message.id).then((value) {
+                            if (value.success) {
+                              _sendMessageController.clear();
+                              setState(() {});
+                            }
+                          });
+                        }
+                      },
                     );
                   } else if (snapshot.hasError) {
                     return Center(child: WhiteText(trans(context)!.text_errorOccurred));
@@ -76,11 +90,4 @@ class _MessageScreenState extends LifecycleState<MessageScreen> {
     Navigator.pop(context);
   }
 
-  onMessagePressed(ApiMessage message) {
-    Navigator.pushNamed(context, "/message", arguments: message);
-  }
-
-  onUserPressed(ApiUser user) {
-    Navigator.pushNamed(context, "/profile", arguments: user);
-  }
 }
