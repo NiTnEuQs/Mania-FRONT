@@ -4,6 +4,8 @@ part 'ApiUser.g.dart';
 
 @JsonSerializable()
 class ApiUser {
+  static var empty = ApiUser(id: 0, identifier: "", pseudo: "", bio: "");
+
   ApiUser({
     required this.id,
     required this.identifier,

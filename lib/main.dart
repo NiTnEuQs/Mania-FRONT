@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mania/app/System.dart';
 import 'package:mania/resources/strings.dart';
 import 'package:mania/routes.dart';
@@ -20,26 +21,28 @@ class MyApp extends StatelessWidget {
     System.transparentStatusBar();
     System.portraitOnly(upsideDown: true);
 
-    return MaterialApp(
-      title: Strings.appName,
-      theme: appTheme(),
-      initialRoute: '/',
-      onGenerateRoute: routes,
-      navigatorObservers: [routeObserver],
-      localizationsDelegates: [
-        RefreshLocalizations.delegate,
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: [
-        Locale('en', ''),
-        Locale('fr', ''),
-      ],
-      // localeResolutionCallback: (Locale? locale, Iterable<Locale> supportedLocales) {
-      //   return locale;
-      // },
+    return ProviderScope(
+      child: MaterialApp(
+        title: Strings.appName,
+        theme: appTheme(),
+        initialRoute: '/',
+        onGenerateRoute: routes,
+        navigatorObservers: [routeObserver],
+        localizationsDelegates: [
+          RefreshLocalizations.delegate,
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: [
+          Locale('en', ''),
+          Locale('fr', ''),
+        ],
+        // localeResolutionCallback: (Locale? locale, Iterable<Locale> supportedLocales) {
+        //   return locale;
+        // },
+      ),
     );
   }
 }

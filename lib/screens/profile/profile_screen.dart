@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mania/api/Requests.dart';
+import 'package:flutter_riverpod/src/consumer.dart';
 import 'package:mania/components/mania_bar.dart';
 import 'package:mania/custom/base_stateful_widget.dart';
 import 'package:mania/models/ApiUser.dart';
@@ -13,18 +13,13 @@ class ProfileScreen extends BaseStatefulWidget {
   final ApiUser user;
 
   @override
-  _ProfileScreenState createState() => _ProfileScreenState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _ProfileScreenState(this.user);
 }
 
 class _ProfileScreenState extends LifecycleState<ProfileScreen> {
-  _ProfileScreenState();
+  _ProfileScreenState(this._user);
 
-  @override
-  void onResume() {
-    super.onResume();
-
-    setState(() {});
-  }
+  final ApiUser _user;
 
   @override
   Widget build(BuildContext context) {
@@ -36,16 +31,11 @@ class _ProfileScreenState extends LifecycleState<ProfileScreen> {
       ),
       body: Column(
         children: <Widget>[
-          TopProfile(userId: widget.user.id, onFollowPressed: onFollowPressed),
-          BotProfile(userId: widget.user.id),
+          TopProfile(userId: _user.id),
+          BotProfile(userId: _user.id),
         ],
       ),
     );
-  }
-
-  onFollowPressed() {
-    setState(() {});
-    Requests.updateUserFollowings(context);
   }
 
   onWriteMessagePressed() {

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mania/mixins/MixinLocalizator.dart';
 
-abstract class BaseStatelessWidget extends StatelessWidget with Localizator {}
+abstract class BaseStatelessWidget extends ConsumerWidget with Localizator {}

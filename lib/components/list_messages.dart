@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mania/components/input_message.dart';
 import 'package:mania/components/material_hero.dart';
 import 'package:mania/components/message.dart';
@@ -37,7 +38,7 @@ class ListMessages extends BaseStatelessWidget {
   final Function(String?)? onSendMessagePressed;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return (messages?.length ?? 0) <= 0
         ? Column(
             children: [

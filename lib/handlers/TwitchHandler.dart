@@ -10,7 +10,7 @@ import 'package:mania/app/Registry.dart';
 import 'package:mania/utils/StringUtils.dart';
 
 class TwitchHandler {
-  static Future<bool> initialize({required BuildContext context}) {
+  static Future<bool> initialize() {
     FlutterTwitchAuth.initialize(
       twitchClientId: Const.twitchClientId,
       twitchClientSecret: Const.twitchClientSecret,

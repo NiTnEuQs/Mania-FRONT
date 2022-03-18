@@ -5,6 +5,8 @@ part 'ApiMessage.g.dart';
 
 @JsonSerializable()
 class ApiMessage {
+  static var empty = ApiMessage(id: 0, text: "", user: ApiUser.empty, timestamp: DateTime.now());
+
   ApiMessage({
     required this.id,
     this.parentMessageId,

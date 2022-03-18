@@ -1,23 +1,23 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/src/consumer.dart';
 import 'package:mania/app/Prefs.dart';
 import 'package:mania/components/background.dart';
 import 'package:mania/components/logo.dart';
+import 'package:mania/custom/base_stateful_widget.dart';
 import 'package:mania/handlers/FirebaseHandler.dart';
 import 'package:mania/handlers/TwitchHandler.dart';
 import 'package:mania/screens/login_screen.dart';
 
-class SplashScreen extends StatefulWidget {
+class SplashScreen extends BaseStatefulWidget {
   SplashScreen({Key? key}) : super(key: key);
 
   @override
-  _SplashScreenState createState() => _SplashScreenState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
-  int _nextScreenRequirements = 0;
-
+class _SplashScreenState extends BaseState<SplashScreen> {
   @override
   void initState() {
     super.initState();
@@ -43,32 +43,20 @@ class _SplashScreenState extends State<SplashScreen> {
     Future.delayed(Duration(seconds: 1), () {
       Prefs.initialize().then((value) {
         // initializeDateFormatting(System.countryCode, null).then((value) {
-        initializeFirebase();
-        initializeTwitch();
+        Future.wait([
+          FirebaseHandler.initialize(),
+          TwitchHandler.initialize(),
+        ]).then((List responses) {
+          onInitializationFinished();
+        }).catchError((e) {
+          print('Error: $e');
+        });
         // });
       });
     });
   }
 
-  initializeFirebase() {
-    _nextScreenRequirements++;
-    FirebaseHandler.initialize(context: context).then((value) {
-      onInitializationFinished();
-    });
-  }
-
-  initializeTwitch() {
-    _nextScreenRequirements++;
-    TwitchHandler.initialize(context: context).then((success) {
-      if (success) {
-        onInitializationFinished();
-      }
-    }).catchError((error) {});
-  }
-
   onInitializationFinished() {
-    if (--_nextScreenRequirements == 0) {
-      LoginScreen.loadNextScreen(context);
-    }
+    LoginScreen.nextScreen(context);
   }
 }
