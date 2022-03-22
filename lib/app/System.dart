@@ -3,8 +3,13 @@ import 'package:flutter/services.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class System {
+  static ThemeMode themeMode = ThemeMode.system;
   static String? countryCode;
   static List<String> availableCountryCode = ['en', 'fr'];
+
+  static isDarkMode() => System.themeMode == ThemeMode.dark;
+
+  static isLightMode() => System.themeMode == ThemeMode.light;
 
   static void initialize(BuildContext context) {
     initializeLocales();

@@ -7,9 +7,9 @@ import 'package:mania/app/Registry.dart';
 import 'package:mania/app/System.dart';
 import 'package:mania/components/FutureWidget.dart';
 import 'package:mania/components/background.dart';
+import 'package:mania/components/gradientmask.dart';
 import 'package:mania/components/image.dart';
 import 'package:mania/components/list_messages.dart';
-import 'package:mania/components/mania_bar.dart';
 import 'package:mania/components/material_hero.dart';
 import 'package:mania/components/whitetext.dart';
 import 'package:mania/custom/base_stateful_widget.dart';
@@ -80,9 +80,9 @@ class _MainMenuPageState extends LifecycleState<MainMenuScreen> {
       }
     });
 
-    Future.delayed(Duration(milliseconds: 350), () {
-      System.transparentStatusBar();
-    });
+    // Future.delayed(Duration(milliseconds: 350), () {
+    //   System.transparentStatusBar();
+    // });
   }
 
   void _onRefresh() async {
@@ -107,84 +107,110 @@ class _MainMenuPageState extends LifecycleState<MainMenuScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: widget.scaffoldKey,
-      backgroundColor: Colours.appBackground,
-      extendBodyBehindAppBar: true,
-      appBar: ManiaBar(
-        title: trans(context)!.screen_mainMenu_title,
-        leftItem: ManiaBarItem(
-          icon: Icons.menu,
-          onItemPressed: widget.onMenuPressed,
-        ),
-        rightItem: ManiaBarItem(
-          icon: Icons.search,
-          onItemPressed: widget.onSearchPressed,
-        ),
-      ),
-      // appBar: MainMenuBar(title: trans(context)!.mainMenu_yourList, onMenuPressed: widget.onMenuPressed),
-      body: Background(
-        shouldCountBar: true,
-        child: Container(
-          // color: Colors.white,
-          padding: const EdgeInsets.all(Dimens.halfMargin),
-          child: FutureBuilder<GenericResponse<List<ApiMessage>>>(
-            future: RestClient.service.getFollowingsRecentMessages(Registry.apiUser!.id),
-            builder: (context, snapshot) {
-              return SmartRefresher(
-                header: WaterDropHeader(
-                  waterDropColor: Colours.secondaryColor,
-                  complete: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      const Icon(
-                        Icons.done,
-                        color: Colors.white,
-                      ),
-                      Container(
-                        width: 15.0,
-                      ),
-                      Text(
-                        (RefreshLocalizations.of(context)?.currentLocalization ?? EnRefreshString()).refreshCompleteText!,
-                        style: TextStyle(color: Colors.white),
-                      )
-                    ],
-                  ),
+      backgroundColor: Theme.of(context).backgroundColor,
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            floating: true,
+            iconTheme: IconThemeData(color: Theme.of(context).colorScheme.secondary),
+            // title: Row(
+            //   children: [
+            //     Container(
+            //       height: 50,
+            //       child: ShaderMask(
+            //         blendMode: BlendMode.srcIn,
+            //         shaderCallback: (bounds) => LinearGradient(colors: [
+            //           Colours.secondaryColor,
+            //           Colours.primaryColor,
+            //         ]).createShader(
+            //           Rect.fromLTWH(0, 0, bounds.width, bounds.height),
+            //         ),
+            //         child: Image.asset("assets/icon/ic_foreground.png"),
+            //       ),
+            //     ),
+            //     GradientText(
+            //       trans(context)!.screen_mainMenu_title,
+            //       gradient: LinearGradient(colors: [
+            //         Colours.secondaryColor,
+            //         Colours.primaryColor,
+            //       ]),
+            //       textAlign: TextAlign.center,
+            //       fontSize: Dimens.appbarTitleSize,
+            //       maxLines: 1,
+            //       overflow: TextOverflow.visible,
+            //     ),
+            //   ],
+            // ),
+            title: Center(
+              child: Container(
+                height: 60,
+                child: GradientMask(
+                  child: Image.asset("assets/icon/ic_foreground.png"),
                 ),
-                onRefresh: _onRefresh,
-                onLoading: _onLoading,
-                controller: _refreshController,
-                scrollController: _listMessagesController,
-                child: FutureWidget(
-                  snapshot,
-                  child: ListMessages(
-                    snapshot.data?.response,
-                    controller: _listMessagesChildController,
-                    displayAvatar: true,
-                    displayPseudo: true,
-                    displayWriteAMessage: true,
-                    openExtendedWriter: true,
+              ),
+            ),
+            actions: [
+              Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: IconButton(
+                  icon: Icon(
+                    Icons.search,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
+                  onPressed: widget.onSearchPressed,
                 ),
-              );
-            },
+              ),
+            ],
           ),
-        ),
-        // child: FutureBuilder<GenericResponse<List<ApiUser>>>(
-        //   future: RestClient.service.getUserFollowings(Registry.apiUser!.id),
-        //   builder: (context, snapshot) {
-        //     if (snapshot.hasData) {
-        //       Registry.followingUsers = snapshot.data!.response!;
-        //       return ListUsers(Registry.followingUsers, onUserPressed: onUserPressed, onUserLongPressed: onUserLongPressed);
-        //     } else if (snapshot.hasError) {
-        //       return Center(child: WhiteText(trans(context)!.text_errorOccurred));
-        //     } else {
-        //       return Center(child: CircularProgressIndicator());
-        //     }
-        //   },
-        // ),
+          SliverFillRemaining(
+            child: Container(
+              padding: EdgeInsets.all(Dimens.halfMargin),
+              child: FutureBuilder<GenericResponse<List<ApiMessage>>>(
+                future: RestClient.service.getFollowingsRecentMessages(Registry.apiUser!.id),
+                builder: (context, snapshot) {
+                  return SmartRefresher(
+                    header: WaterDropHeader(
+                      waterDropColor: Theme.of(context).colorScheme.secondary,
+                      complete: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          GradientMask(
+                            child: Icon(
+                              Icons.done,
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    onRefresh: _onRefresh,
+                    onLoading: _onLoading,
+                    controller: _refreshController,
+                    scrollController: _listMessagesController,
+                    child: FutureWidget(
+                      snapshot,
+                      child: ListMessages(
+                        snapshot.data?.response,
+                        controller: _listMessagesChildController,
+                        displayAvatar: true,
+                        displayPseudo: true,
+                        displayWriteAMessage: true,
+                        openExtendedWriter: true,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        ],
       ),
       floatingActionButton: _displayFloatingActionButton
           ? FloatingActionButton(
               child: Icon(Icons.arrow_upward),
+              backgroundColor: Theme.of(context).colorScheme.primary,
               onPressed: () {
                 _listMessagesController.animateTo(0, duration: Duration(milliseconds: 500), curve: Curves.ease);
               },
@@ -280,6 +306,11 @@ class _MainMenuPageState extends LifecycleState<MainMenuScreen> {
                 onTap: onDrawerSettingsPressed,
               ),
               ListTile(
+                leading: Icon(System.isDarkMode() ? Icons.light_mode : Icons.dark_mode, color: Colors.white),
+                title: WhiteText(System.isDarkMode() ? trans(context)!.text_light_mode : trans(context)!.text_dark_mode),
+                onTap: onDrawerThemeModePressed,
+              ),
+              ListTile(
                 leading: Icon(Icons.logout, color: Colors.white),
                 title: WhiteText(trans(context)!.text_logout),
                 onTap: onDrawerLogoutPressed,
@@ -330,6 +361,20 @@ class _MainMenuPageState extends LifecycleState<MainMenuScreen> {
     Navigator.pop(context);
 
     Navigator.pushNamed(context, "/settings");
+  }
+
+  onDrawerThemeModePressed() {
+    Navigator.pop(context);
+
+    if (System.isDarkMode()) {
+      System.themeMode = ThemeMode.light;
+    } else if (System.isLightMode()) {
+      System.themeMode = ThemeMode.system;
+    } else {
+      System.themeMode = ThemeMode.dark;
+    }
+
+    setState(() {});
   }
 
   onDrawerLogoutPressed() {

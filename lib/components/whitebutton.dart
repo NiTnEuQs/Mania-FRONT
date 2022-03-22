@@ -26,7 +26,7 @@ class WhiteButton extends StatelessWidget {
           ),
           child: Text(
             text,
-            style: TextStyle(color: textColor ?? Theme.of(context).primaryColor),
+            style: TextStyle(color: textColor ?? Theme.of(context).colorScheme.primary),
           ),
         )
         // child: RaisedButton(
@@ -36,8 +36,8 @@ class WhiteButton extends StatelessWidget {
         //     borderRadius: BorderRadius.circular(10.0),
         //   ),
         //   child: Text(
-        //     text,
-        //     style: TextStyle(color: textColor ?? Theme.of(context).primaryColor),
+      //     text,
+        //     style: TextStyle(color: textColor ?? Theme.of(context).colorScheme.primary),
         //   ),
         // ),
         );

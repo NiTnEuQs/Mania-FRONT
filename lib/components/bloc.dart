@@ -26,7 +26,7 @@ class Bloc extends StatelessWidget {
         boxShadow: shadow
             ? [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.5),
+                  color: Theme.of(context).shadowColor.withOpacity(0.5),
                   spreadRadius: 0,
                   blurRadius: 3,
                   offset: Offset(0, 2),

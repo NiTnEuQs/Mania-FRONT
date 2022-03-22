@@ -87,7 +87,7 @@ class _InputMessageState extends State<InputMessage> {
             child: Padding(
               padding: const EdgeInsets.only(top: Dimens.margin, bottom: Dimens.margin, right: Dimens.margin),
               child: RoundedOutline(
-                color: Colours.secondaryColor,
+                color: Theme.of(context).colorScheme.primary,
                 padding: const EdgeInsets.all(Dimens.margin),
                 onPressed: () {
                   if (widget.onSendMessagePressed != null) {

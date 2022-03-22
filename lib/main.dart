@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:mania/app/System.dart';
+import 'package:mania/custom/base_stateless_widget.dart';
 import 'package:mania/resources/strings.dart';
 import 'package:mania/routes.dart';
 import 'package:mania/theme/theme.dart';
@@ -13,7 +14,7 @@ void main() {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends BaseStatelessWidget {
   @override
   Widget build(BuildContext context) {
     System.initialize(context);
@@ -23,6 +24,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: Strings.appName,
       theme: appTheme(),
+      darkTheme: appDarkTheme(),
+      themeMode: System.themeMode,
       initialRoute: '/',
       onGenerateRoute: routes,
       navigatorObservers: [routeObserver],

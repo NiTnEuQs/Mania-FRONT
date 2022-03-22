@@ -46,7 +46,7 @@ class _MessageState extends State<Message> {
       padding: widget.extended ? const EdgeInsets.all(0) : const EdgeInsets.all(Dimens.halfMargin),
       child: Bloc(
         onTap: (widget.onMessagePressed != null) ? () => widget.onMessagePressed!(widget.message) : null,
-        color: widget.extended ? Colors.transparent : Colors.white,
+        color: widget.extended ? Colors.transparent : Theme.of(context).backgroundColor,
         shadow: !widget.extended,
         padding: widget.extended ? const EdgeInsets.all(0) : const EdgeInsets.all(16.0),
         child: Column(
@@ -82,7 +82,7 @@ class _MessageState extends State<Message> {
                         child: WhiteText(
                           widget.message.user.pseudo,
                           onPressed: widget.onUserPressed != null ? () => widget.onUserPressed!(widget.message.user) : null,
-                          color: widget.extended ? Colors.white : Colors.black,
+                          color: widget.extended ? Colors.white : Theme.of(context).textTheme.headline6?.color,
                           boldest: true,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -96,7 +96,7 @@ class _MessageState extends State<Message> {
               tag: '${HeroTags.MESSAGE_TEXT}${widget.message.id}',
               child: WhiteText(
                 widget.message.text,
-                color: widget.extended ? Colors.white : Colors.black,
+                color: widget.extended ? Colors.white : Theme.of(context).textTheme.bodyText1?.color,
                 fontDimension: widget.extended ? TextDimension.XXL : null,
               ),
             ),

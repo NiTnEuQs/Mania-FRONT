@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
 class Colours {
+  static _Light light = _Light();
+  static _Dark dark = _Dark();
+
   // Theme
 
   static const MaterialColor primarySwatch = Colors.orange;
@@ -23,9 +26,19 @@ class Colours {
 
   static const Color appbarIcon = Colors.white;
   static const Color appbarIconBackground = Colors.black38;
-  static const Color appBackground = Color(0xFFF5F5F5);
+  static const Color appBackground = Color(0xFFFFFFFF);
+
+  // static const Color appBackground = Color(0xFFF5F5F5);
   static const Color separator = Color(0xFFD94800);
   static const Color badge = Color(0xFFFFA200);
   static const Color blackOverlay = Color(0x33000000);
   static const Color whiteOverlay = Color(0x33FFFFFF);
+}
+
+class _Light {
+  Color get appBackground => Color(0xFFFFFFFF);
+}
+
+class _Dark {
+  Color get appBackground => Color(0xFF212121);
 }

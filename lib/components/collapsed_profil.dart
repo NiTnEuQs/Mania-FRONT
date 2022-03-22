@@ -6,7 +6,6 @@ import 'package:mania/components/image.dart';
 import 'package:mania/components/roundoutline.dart';
 import 'package:mania/components/whitetext.dart';
 import 'package:mania/models/ApiUser.dart';
-import 'package:mania/resources/colours.dart';
 import 'package:mania/resources/dimensions.dart';
 import 'package:mania/resources/herotags.dart';
 
@@ -139,7 +138,7 @@ class _CollapsedProfilState extends State<CollapsedProfil> {
                 child: Icon(
                   _isFollowingUser ? Icons.remove : Icons.person_add,
                   size: 16,
-                  color: _isFollowingUser ? Colors.white : Colours.primaryColor,
+                  color: _isFollowingUser ? Colors.white : Theme.of(context).colorScheme.primary,
                 ),
               ),
             ),

@@ -147,7 +147,7 @@ class _TopProfileState extends State<TopProfile> {
                           ),
                         // Tags(
                         //   _user.tags ?? List.empty(),
-                        //   textColor: Theme.of(context).primaryColor,
+                        //   textColor: Theme.of(context).colorScheme.primary,
                         // ),
                       ],
                     ),
