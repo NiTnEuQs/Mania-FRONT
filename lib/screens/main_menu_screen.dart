@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:mania/api/Requests.dart';
-import 'package:mania/api/RestClient.dart';
+import 'package:flutter_riverpod/src/consumer.dart';
 import 'package:mania/app/Prefs.dart';
 import 'package:mania/app/Registry.dart';
 import 'package:mania/app/System.dart';
-import 'package:mania/components/FutureWidget.dart';
+import 'package:mania/components/ConditionalWidget.dart';
 import 'package:mania/components/background.dart';
 import 'package:mania/components/gradientmask.dart';
 import 'package:mania/components/image.dart';
@@ -16,7 +15,8 @@ import 'package:mania/custom/base_stateful_widget.dart';
 import 'package:mania/handlers/FirebaseHandler.dart';
 import 'package:mania/models/ApiMessage.dart';
 import 'package:mania/models/ApiUser.dart';
-import 'package:mania/models/GenericResponse.dart';
+import 'package:mania/providers/UserFollowingsProvider.dart';
+import 'package:mania/providers/UserLoggedProvider.dart';
 import 'package:mania/resources/colours.dart';
 import 'package:mania/resources/dimensions.dart';
 import 'package:mania/resources/herotags.dart';
@@ -37,13 +37,13 @@ class MainMenuScreen extends BaseStatefulWidget {
   final DrawerCallback? onDrawerChanged;
 
   @override
-  _MainMenuPageState createState() => _MainMenuPageState(Registry.apiUser);
+  ConsumerState<ConsumerStatefulWidget> createState() => _MainMenuPageState();
 }
 
 class _MainMenuPageState extends LifecycleState<MainMenuScreen> {
-  _MainMenuPageState(this._user);
+  late ApiUser _user;
+  late List<ApiMessage> _recentMessages;
 
-  ApiUser? _user;
   bool _displayFloatingActionButton = false;
   ScrollController _listMessagesController = new ScrollController();
   ScrollController _listMessagesChildController = new ScrollController();
@@ -72,12 +72,9 @@ class _MainMenuPageState extends LifecycleState<MainMenuScreen> {
   onResume() {
     super.onResume();
 
-    Requests.getUserInformations(context).then((value) {
-      if (value.success) {
-        _user = Registry.apiUser;
-
-        if (mounted) setState(() {});
-      }
+    ref.read(userLoggedProvider).getUser().then((value) {
+      _user = ref.watch(userLoggedProvider).user;
+      ref.read(userFollowingsProvider).getRecentMessages(userId: _user.id);
     });
 
     // Future.delayed(Duration(milliseconds: 350), () {
@@ -86,8 +83,9 @@ class _MainMenuPageState extends LifecycleState<MainMenuScreen> {
   }
 
   void _onRefresh() async {
-    setState(() {});
-    _refreshController.refreshCompleted();
+    ref.read(userFollowingsProvider).getRecentMessages(userId: _user.id).whenComplete(
+          _refreshController.refreshCompleted,
+        );
     // // monitor network fetch
     // await Future.delayed(Duration(milliseconds: 1000));
     // // if failed,use refreshFailed()
@@ -105,6 +103,9 @@ class _MainMenuPageState extends LifecycleState<MainMenuScreen> {
 
   @override
   Widget build(BuildContext context) {
+    _user = ref.watch(userLoggedProvider).user;
+    _recentMessages = ref.watch(userFollowingsProvider).messages;
+
     return Scaffold(
       key: widget.scaffoldKey,
       backgroundColor: Theme.of(context).backgroundColor,
@@ -167,11 +168,16 @@ class _MainMenuPageState extends LifecycleState<MainMenuScreen> {
           SliverFillRemaining(
             child: Container(
               padding: EdgeInsets.all(Dimens.halfMargin),
-              child: FutureBuilder<GenericResponse<List<ApiMessage>>>(
-                future: RestClient.service.getFollowingsRecentMessages(Registry.apiUser!.id),
-                builder: (context, snapshot) {
-                  return SmartRefresher(
-                    header: WaterDropHeader(
+              child: SmartRefresher(
+            header: WaterDropHeader(
+              refresh: Container(
+                width: 20.0,
+                height: 20.0,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2.0,
+                ),
+                    ),
                       waterDropColor: Theme.of(context).colorScheme.secondary,
                       complete: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -189,19 +195,18 @@ class _MainMenuPageState extends LifecycleState<MainMenuScreen> {
                     onLoading: _onLoading,
                     controller: _refreshController,
                     scrollController: _listMessagesController,
-                    child: FutureWidget(
-                      snapshot,
+                    child: ConditionalWidget(
+                      conditions: _recentMessages.isNotEmpty,
                       child: ListMessages(
-                        snapshot.data?.response,
+                        _recentMessages,
                         controller: _listMessagesChildController,
                         displayAvatar: true,
                         displayPseudo: true,
                         displayWriteAMessage: true,
                         openExtendedWriter: true,
-                      ),
-                    ),
-                  );
-                },
+
+                  ),
+                ),
               ),
             ),
           ),
@@ -209,8 +214,8 @@ class _MainMenuPageState extends LifecycleState<MainMenuScreen> {
       ),
       floatingActionButton: _displayFloatingActionButton
           ? FloatingActionButton(
-              child: Icon(Icons.arrow_upward),
-              backgroundColor: Theme.of(context).colorScheme.primary,
+        child: Icon(Icons.arrow_upward),
+        backgroundColor: Theme.of(context).colorScheme.primary,
               onPressed: () {
                 _listMessagesController.animateTo(0, duration: Duration(milliseconds: 500), curve: Curves.ease);
               },
@@ -234,9 +239,9 @@ class _MainMenuPageState extends LifecycleState<MainMenuScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       MaterialHero(
-                        tag: '${HeroTags.PROFILE_AVATAR}${_user?.id}',
+                        tag: '${HeroTags.PROFILE_AVATAR}${_user.id}',
                         child: RoundedImage(
-                          _user?.imageUrl,
+                          _user.imageUrl,
                           onPressed: onDrawerProfilePressed,
                           height: Dimens.profileAvatarSize,
                           width: Dimens.profileAvatarSize,
@@ -248,9 +253,9 @@ class _MainMenuPageState extends LifecycleState<MainMenuScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           MaterialHero(
-                            tag: '${HeroTags.PROFILE_PSEUDO}${_user?.id}',
+                            tag: '${HeroTags.PROFILE_PSEUDO}${_user.id}',
                             child: WhiteText(
-                              "${_user?.pseudo}",
+                              "${_user.pseudo}",
                               boldest: true,
                             ),
                           ),
@@ -258,16 +263,16 @@ class _MainMenuPageState extends LifecycleState<MainMenuScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               MaterialHero(
-                                tag: '${HeroTags.PROFILE_FOLLOWERS}${_user?.id}',
+                                tag: '${HeroTags.PROFILE_FOLLOWERS}${_user.id}',
                                 child: WhiteText(
-                                  "${trans(context)!.follower(_user?.nbFollowers ?? 0)}",
+                                  "${trans(context)!.follower(_user.nbFollowers ?? 0)}",
                                   onPressed: onDrawerFollowersPressed,
                                 ),
                               ),
                               MaterialHero(
-                                tag: '${HeroTags.PROFILE_FOLLOWINGS}${_user?.id}',
+                                tag: '${HeroTags.PROFILE_FOLLOWINGS}${_user.id}',
                                 child: WhiteText(
-                                  "${trans(context)!.following(_user?.nbFollowings ?? 0)}",
+                                  "${trans(context)!.following(_user.nbFollowings ?? 0)}",
                                   onPressed: onDrawerFollowingsPressed,
                                 ),
                               ),

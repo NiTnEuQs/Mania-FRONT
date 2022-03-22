@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mania/main.dart';
 import 'package:mania/mixins/MixinLocalizator.dart';
 
-abstract class BaseStatefulWidget extends StatefulWidget {
+abstract class BaseStatefulWidget extends ConsumerStatefulWidget {
   BaseStatefulWidget({Key? key}) : super(key: key);
 }
 
-abstract class BaseState<T extends StatefulWidget> extends State<T> with Localizator {}
+abstract class BaseState<T extends ConsumerStatefulWidget> extends ConsumerState<T> with Localizator {}
 
-abstract class LifecycleState<T extends StatefulWidget> extends BaseState<T> with RouteAware {
+abstract class LifecycleState<T extends ConsumerStatefulWidget> extends BaseState<T> with RouteAware {
   // @override
   // void initState() {
   //   super.initState();

@@ -19,6 +19,9 @@ dependencies:
 
   cupertino_icons: ^1.0.4
 
+  # --- State management
+  flutter_riverpod: ^1.0.3
+
   # --- Firebase
 
   google_sign_in: ^5.2.1

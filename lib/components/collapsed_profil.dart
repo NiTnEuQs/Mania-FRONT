@@ -150,7 +150,7 @@ class _CollapsedProfilState extends State<CollapsedProfil> {
 
   onFollowUserPressed() {
     RestClient.service.updateRelation(Registry.apiUser!.id, widget.user.id, followed: !_isFollowingUser).then((value) {
-      Requests.updateUserFollowings(context).then((value) {
+      Requests.updateUserFollowings().then((value) {
         setState(() {});
       });
     });

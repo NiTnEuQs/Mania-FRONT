@@ -6,7 +6,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mania/app/Registry.dart';
 
 class FirebaseHandler {
-  static Future<FirebaseApp> initialize({required BuildContext context}) async {
+  static Future<FirebaseApp> initialize() async {
     FirebaseApp firebaseApp = await Firebase.initializeApp();
 
     Registry.firebaseUser = FirebaseAuth.instance.currentUser;

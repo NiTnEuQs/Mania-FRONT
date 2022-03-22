@@ -1,14 +1,12 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:mania/api/RestClient.dart';
 import 'package:mania/app/Registry.dart';
-import 'package:mania/app/Utils.dart';
 import 'package:mania/models/ApiUser.dart';
 import 'package:mania/models/GenericResponse.dart';
 
 class Requests {
-  static Future<GenericResponse<ApiUser>> getUserInformations(BuildContext context) {
+  static Future<GenericResponse<ApiUser>> getUserInformations() {
     var completer = Completer<GenericResponse<ApiUser>>();
 
     if (Registry.firebaseUser != null) {
@@ -71,13 +69,13 @@ class Requests {
         completer.completeError(error);
       });
     } else {
-      completer.complete(GenericResponse<ApiUser>(success: false, message: trans(context)!.isNull("Registry.firebaseUser or Registry.twitchUser")));
+      completer.complete(GenericResponse<ApiUser>(success: false, message: "Registry.firebaseUser or Registry.twitchUser is null"));
     }
 
     return completer.future;
   }
 
-  static Future<GenericResponse<List<ApiUser>>> updateUserFollowings(BuildContext context) {
+  static Future<GenericResponse<List<ApiUser>>> updateUserFollowings() {
     var completer = Completer<GenericResponse<List<ApiUser>>>();
 
     if (Registry.apiUser != null) {
@@ -93,7 +91,7 @@ class Requests {
         completer.completeError(error);
       });
     } else {
-      completer.complete(GenericResponse<List<ApiUser>>(success: false, message: trans(context)!.isNull("Registry.apiUser")));
+      completer.complete(GenericResponse<List<ApiUser>>(success: false, message: "Registry.apiUser is null"));
     }
 
     return completer.future;

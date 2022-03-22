@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mania/app/System.dart';
 import 'package:mania/custom/base_stateless_widget.dart';
 import 'package:mania/resources/strings.dart';
@@ -21,28 +22,30 @@ class MyApp extends BaseStatelessWidget {
     System.transparentStatusBar();
     System.portraitOnly(upsideDown: true);
 
-    return MaterialApp(
-      title: Strings.appName,
-      theme: appTheme(),
-      darkTheme: appDarkTheme(),
-      themeMode: System.themeMode,
-      initialRoute: '/',
-      onGenerateRoute: routes,
-      navigatorObservers: [routeObserver],
-      localizationsDelegates: [
-        RefreshLocalizations.delegate,
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: [
-        Locale('en', ''),
-        Locale('fr', ''),
-      ],
-      // localeResolutionCallback: (Locale? locale, Iterable<Locale> supportedLocales) {
-      //   return locale;
-      // },
+    return ProviderScope(
+      child: MaterialApp(
+        title: Strings.appName,
+        theme: appTheme(),
+        darkTheme: appDarkTheme(),
+        themeMode: System.themeMode,
+        initialRoute: '/',
+        onGenerateRoute: routes,
+        navigatorObservers: [routeObserver],
+        localizationsDelegates: [
+          RefreshLocalizations.delegate,
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: [
+          Locale('en', ''),
+          Locale('fr', ''),
+        ],
+        // localeResolutionCallback: (Locale? locale, Iterable<Locale> supportedLocales) {
+        //   return locale;
+        // },
+      ),
     );
   }
 }
