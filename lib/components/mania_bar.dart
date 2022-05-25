@@ -1,117 +1,78 @@
 import 'package:flutter/material.dart';
-import 'package:mania/app/Utils.dart';
-import 'package:mania/components/material_hero.dart';
-import 'package:mania/components/roundoutline.dart';
-import 'package:mania/components/transparentinput.dart';
-import 'package:mania/components/whitetext.dart';
-import 'package:mania/resources/colours.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mania/components/mania_text.dart';
+import 'package:mania/custom/base_stateless_widget.dart';
+import 'package:mania/extensions/bightness_extension.dart';
+import 'package:mania/providers/theme_brightness_provider.dart';
 import 'package:mania/resources/dimensions.dart';
-import 'package:mania/resources/herotags.dart';
-import 'package:mania/utils/StringUtils.dart';
 
-class ManiaBar extends StatelessWidget implements PreferredSizeWidget {
-  ManiaBar({Key? key, this.title, this.onSearchValueChanged, this.leftItem, this.rightItem});
+class ManiaBar extends BaseStatelessWidget implements PreferredSizeWidget {
+  ManiaBar({
+    this.title,
+    this.titleIcon,
+    this.leading,
+    this.noLeading = false,
+    this.actions,
+  });
 
   final String? title;
-  final Function(String)? onSearchValueChanged;
-  final ManiaBarItem? leftItem, rightItem;
+  final Widget? titleIcon;
+  final Widget? leading;
+  final bool noLeading;
+  final List<Widget>? actions;
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: Dimens.appbarHeight,
-      padding: EdgeInsets.only(
-        top: Dimens.appbarMarginTB + MediaQuery.of(context).padding.top,
-        bottom: Dimens.appbarMarginTB,
-        left: Dimens.appbarMarginLR,
-        right: Dimens.appbarMarginLR,
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          MaterialHero(
-            tag: HeroTags.APPBAR_LEFT_BUTTON,
-            child: Container(
-              height: Dimens.appbarIconsBackgroundSize,
-              width: Dimens.appbarIconsBackgroundSize,
-              child: leftItem,
+  Size get preferredSize => const Size.fromHeight(Dimens.appbarHeight);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final Brightness themeBrightness = ref.watch(themeBrightnessProvider);
+
+    return AppBar(
+      systemOverlayStyle: themeBrightness.isDark()
+          ? SystemUiOverlayStyle.light.copyWith(
+              statusBarColor: Colors.transparent,
+            )
+          : SystemUiOverlayStyle.dark.copyWith(
+              statusBarColor: Colors.transparent,
             ),
-          ),
-          Expanded(
-            child: MaterialHero(
-              tag: HeroTags.TITLE,
-              child: (onSearchValueChanged != null)
-                  ? Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                      child: TransparentInput(
-                        autofocus: true,
-                        placeholder: trans(context)!.text_search,
-                        onValueChanged: onSearchValueChanged,
-                      ),
-                    )
-                  : (!isStringEmpty(title)
-                      ? Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: ConstrainedBox(
-                            constraints: BoxConstraints(
-                              maxHeight: 26,
-                            ),
-                            child: FittedBox(
-                              fit: BoxFit.contain,
-                              child: WhiteText(
-                                title ?? '',
-                                textAlign: TextAlign.center,
-                                fontSize: Dimens.appbarTitleSize,
-                                maxLines: 1,
-                                overflow: TextOverflow.visible,
-                              ),
-                            ),
-                          ),
-                        )
-                      : Container()),
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      iconTheme: IconThemeData(color: Theme.of(context).colorScheme.secondary),
+      centerTitle: true,
+      title: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (titleIcon != null) titleIcon!,
+          if (title?.isNotEmpty ?? false)
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.6,
+              child: ManiaText(
+                title,
+                maxLines: 2,
+                textAlign: TextAlign.center,
+                color: Theme.of(context).colorScheme.primary,
+                boldest: true,
+              ),
             ),
-          ),
-          MaterialHero(
-            tag: HeroTags.APPBAR_RIGHT_BUTTON,
-            child: Container(
-              height: Dimens.appbarIconsBackgroundSize,
-              width: Dimens.appbarIconsBackgroundSize,
-              child: rightItem,
-            ),
-          ),
         ],
       ),
+      leading: noLeading
+          ? null
+          : (leading ??
+              Builder(
+                builder: (BuildContext context) {
+                  return IconButton(
+                    icon: const Icon(Icons.arrow_back),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+                  );
+                },
+              )),
+      actions: actions,
     );
   }
-
-  @override
-  Size get preferredSize => Size.fromHeight(Dimens.appbarHeight);
-}
-
-class ManiaBarItem extends StatelessWidget {
-  const ManiaBarItem({Key? key, this.icon, this.onItemPressed}) : super(key: key);
-
-  final IconData? icon;
-  final VoidCallback? onItemPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return RoundOutline(
-      color: Colours.appbarIconBackground,
-      child: Icon(
-        icon ?? Icons.arrow_back,
-        color: Colours.appbarIcon,
-        size: Dimens.appbarIconsSize,
-      ),
-      onPressed: onItemPressed,
-    );
-  }
-
-  static ManiaBarItem back(BuildContext context, {IconData? icon, VoidCallback? onPressed}) => ManiaBarItem(
-        icon: icon ?? Icons.arrow_back,
-        onItemPressed: onPressed ??
-            () {
-              Navigator.pop(context);
-            },
-      );
 }

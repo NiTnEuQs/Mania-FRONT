@@ -1,88 +1,59 @@
 import 'package:flutter/material.dart';
-import 'package:mania/delegates/UsersSearchDelegate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mania/custom/base_stateful_widget.dart';
+import 'package:mania/delegates/users_search_delegate.dart';
 import 'package:mania/screens/main_menu_screen.dart';
 
-class HomeScreen extends StatefulWidget {
-  HomeScreen({Key? key}) : super(key: key);
+class HomeScreen extends BaseStatefulWidget {
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  final GlobalKey<ScaffoldState> _mainMenuScaffoldKey = new GlobalKey<ScaffoldState>();
-
-  bool _drawerOpened = false;
+class _HomeScreenState extends BaseState<HomeScreen> {
+  final GlobalKey<ScaffoldState> _mainMenuScaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: onBackPressed,
-      child: Scaffold(
-        body: MainMenuScreen(
-          scaffoldKey: _mainMenuScaffoldKey,
-          onMenuPressed: onMenuPressed,
-          onSearchPressed: onSearchPressed,
-          onDrawerChanged: onDrawerChanged,
-        ),
-        // floatingActionButton: computedFloatingActionButton(),
+      child: MainMenuScreen(
+        scaffoldKey: _mainMenuScaffoldKey,
+        onMenuPressed: onMenuPressed,
+        onSearchPressed: onSearchPressed,
       ),
     );
   }
 
-  Future<bool> onBackPressed() async {
-    return (await showDialog(
-      context: context,
-      builder: (context) => new AlertDialog(
-        title: new Text('Are you sure?'),
-        content: new Text('Do you want to exit Mania ?'),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: new Text('No'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: new Text('Yes'),
-          ),
-        ],
-      ),
-    ));
-  }
-
-  // Computed attributes
-
-  computedFloatingActionButton() {
-    if (_drawerOpened) {
-      return null;
-    } else {
-      return FloatingActionButton(
-        onPressed: onAddUserPressed,
-        child: Icon(Icons.person_add),
-      );
-    }
-  }
+  Future<bool> onBackPressed() async => showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Are you sure?'),
+          content: const Text('Do you want to exit Mania ?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('No'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Yes'),
+            ),
+          ],
+        ),
+      ).then((x) => x ?? false);
 
   // Callbacks
 
-  onMenuPressed() {
+  void onMenuPressed() {
     _mainMenuScaffoldKey.currentState?.openDrawer();
   }
 
-  onSearchPressed() {
+  void onSearchPressed() {
     showSearch(
       context: context,
       delegate: UsersSearchDelegate(),
     );
-  }
-
-  onAddUserPressed() {
-    Navigator.pushNamed(context, "/search");
-  }
-
-  onDrawerChanged(isOpen) {
-    setState(() {
-      _drawerOpened = isOpen;
-    });
   }
 }

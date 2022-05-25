@@ -1,14 +1,15 @@
 class Dimens {
   static const double appbarMarginTB = 10;
   static const double appbarMarginLR = 20;
-  static const double appbarHeight = 100;
+  static const double appbarHeight = 60;
   static const double appbarIconsSize = 24;
   static const double appbarIconsBackgroundSize = 40;
 
   static const double halfMargin = 4;
   static const double margin = 8;
   static const double marginDouble = margin * 2;
-  static const double blocCornerRadius = 25;
+  static const double blocCornerRadius = 14;
+  static const double buttonCornerRadius = 14;
   static const double greyInputCornerRadius = 7;
   static const double logoSize = 55;
 

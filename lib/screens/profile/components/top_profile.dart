@@ -1,24 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/src/consumer.dart';
-import 'package:mania/api/RestClient.dart';
-import 'package:mania/app/Registry.dart';
-import 'package:mania/app/Utils.dart';
-import 'package:mania/components/ConditionalWidget.dart';
-import 'package:mania/components/background.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mania/api/rest_client.dart';
+import 'package:mania/app/registry.dart';
+import 'package:mania/components/conditional_widget.dart';
 import 'package:mania/components/image.dart';
+import 'package:mania/components/mania_button.dart';
+import 'package:mania/components/mania_text.dart';
 import 'package:mania/components/material_hero.dart';
-import 'package:mania/components/whitebutton.dart';
-import 'package:mania/components/whitetext.dart';
 import 'package:mania/custom/base_stateful_widget.dart';
-import 'package:mania/models/ApiUser.dart';
-import 'package:mania/providers/UserFollowingsProvider.dart';
-import 'package:mania/providers/UserProvider.dart';
+import 'package:mania/models/api_user.dart';
+import 'package:mania/providers/should_update_provider.dart';
+import 'package:mania/providers/user_followings_provider.dart';
+import 'package:mania/providers/user_provider.dart';
 import 'package:mania/resources/dimensions.dart';
-import 'package:mania/resources/herotags.dart';
-import 'package:mania/utils/StringUtils.dart';
+import 'package:mania/resources/hero_tags.dart';
+import 'package:mania/utils/string_utils.dart';
 
 class TopProfile extends BaseStatefulWidget {
-  TopProfile({Key? key, required this.userId});
+  const TopProfile({required this.userId});
 
   final int userId;
 
@@ -44,15 +43,10 @@ class _TopProfileState extends LifecycleState<TopProfile> {
     _user = ref.watch(userProvider).user;
     _isFollowing = ref.watch(userFollowingsProvider).users.any((element) => element.id == widget.userId);
 
-    return Background(
-      shouldCountBar: true,
+    return Padding(
       padding: const EdgeInsets.all(Dimens.marginDouble),
-      borderRadius: BorderRadius.only(
-        bottomLeft: Radius.circular(Dimens.blocCornerRadius),
-        bottomRight: Radius.circular(Dimens.blocCornerRadius),
-      ),
       child: ConstrainedBox(
-        constraints: BoxConstraints(minHeight: 100),
+        constraints: const BoxConstraints(minHeight: 100),
         child: ConditionalWidget(
           conditions: widget.userId == _user.id,
           child: Column(
@@ -60,11 +54,10 @@ class _TopProfileState extends LifecycleState<TopProfile> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Row(
-                mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   MaterialHero(
-                    tag: '${HeroTags.PROFILE_AVATAR}${_user.id}',
+                    tag: '${HeroTags.profileAvatar}${_user.id}',
                     child: RoundedImage(
                       _user.imageUrl,
                       width: Dimens.profileAvatarSize,
@@ -72,28 +65,31 @@ class _TopProfileState extends LifecycleState<TopProfile> {
                       isUrl: true,
                     ),
                   ),
-                  _user.id != Registry.apiUser?.id
-                      ? WhiteButton(
-                          _isFollowing ? trans(context)!.text_unfollow : trans(context)!.text_follow,
-                          width: 140,
-                          color: _isFollowing ? Colors.red : null,
-                          textColor: _isFollowing ? Colors.white : null,
-                          onPressed: onFollowPressed,
-                        )
-                      : WhiteButton(
-                          trans(context)!.text_editProfile,
-                          width: 140,
-                          onPressed: onEditProfilePressed,
-                        ),
+                  if (_user.id != Registry.apiUser?.id)
+                    ManiaButton(
+                      _isFollowing ? trans(context)?.text_unfollow : trans(context)?.text_follow,
+                      width: 140,
+                      textColor: _isFollowing ? Colors.white : Theme.of(context).textTheme.bodyText2?.color,
+                      backgroundColor: _isFollowing ? Colors.red : Theme.of(context).backgroundColor,
+                      onPressed: onFollowPressed,
+                    )
+                  else
+                    ManiaButton(
+                      trans(context)?.text_editProfile,
+                      width: 140,
+                      textColor: Theme.of(context).textTheme.bodyText2?.color,
+                      backgroundColor: Theme.of(context).backgroundColor,
+                      onPressed: onEditProfilePressed,
+                    ),
                 ],
               ),
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 6.0),
                 child: MaterialHero(
-                  tag: '${HeroTags.PROFILE_PSEUDO}${_user.id}',
-                  child: WhiteText(
-                    '${_user.pseudo}',
+                  tag: '${HeroTags.profilePseudo}${_user.id}',
+                  child: ManiaText(
+                    _user.pseudo,
                     boldest: true,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -106,16 +102,18 @@ class _TopProfileState extends LifecycleState<TopProfile> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     MaterialHero(
-                      tag: '${HeroTags.PROFILE_FOLLOWERS}${_user.id}',
-                      child: WhiteText(
-                        trans(context)!.follower(_user.nbFollowers ?? 0),
+                      tag: '${HeroTags.profileFollowers}${_user.id}',
+                      child: ManiaText(
+                        trans(context)?.follower(_user.nbFollowers ?? 0),
+                        bold: true,
                         onPressed: onFollowersPressed,
                       ),
                     ),
                     MaterialHero(
-                      tag: '${HeroTags.PROFILE_FOLLOWINGS}${_user.id}',
-                      child: WhiteText(
-                        trans(context)!.following(_user.nbFollowings ?? 0),
+                      tag: '${HeroTags.profileFollowings}${_user.id}',
+                      child: ManiaText(
+                        trans(context)?.following(_user.nbFollowings ?? 0),
+                        bold: true,
                         onPressed: onFollowingsPressed,
                       ),
                     ),
@@ -128,15 +126,15 @@ class _TopProfileState extends LifecycleState<TopProfile> {
                   child: InkWell(
                     onTap: onDescriptionPressed,
                     child: MaterialHero(
-                      tag: '${HeroTags.PROFILE_DESCRIPTION}${_user.id}',
+                      tag: '${HeroTags.profileDescription}${_user.id}',
                       child: _descriptionCollapsed
-                          ? WhiteText(
+                          ? ManiaText(
                               _user.bio,
                               textAlign: TextAlign.justify,
                               maxLines: 3,
                               overflow: TextOverflow.ellipsis,
                             )
-                          : WhiteText(
+                          : ManiaText(
                               _user.bio,
                               textAlign: TextAlign.justify,
                             ),
@@ -154,27 +152,28 @@ class _TopProfileState extends LifecycleState<TopProfile> {
     );
   }
 
-  onFollowPressed() {
+  void onFollowPressed() {
     RestClient.service.updateRelation(Registry.apiUser!.id, _user.id, followed: !_isFollowing).then((value) {
       if (value.success) {
         ref.read(userFollowingsProvider).getUsers();
+        ref.read(shouldUpdateProvider).updateMainMenuScreen();
       }
     });
   }
 
-  onEditProfilePressed() {
+  void onEditProfilePressed() {
     Navigator.pushNamed(context, "/profile/edit", arguments: _user);
   }
 
-  onFollowingsPressed() {
+  void onFollowingsPressed() {
     Navigator.pushNamed(context, "/followings", arguments: _user);
   }
 
-  onFollowersPressed() {
+  void onFollowersPressed() {
     Navigator.pushNamed(context, "/followers", arguments: _user);
   }
 
-  onDescriptionPressed() {
+  void onDescriptionPressed() {
     setState(() {
       _descriptionCollapsed = !_descriptionCollapsed;
     });

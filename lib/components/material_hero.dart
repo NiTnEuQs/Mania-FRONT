@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
 class MaterialHero extends StatelessWidget {
-  MaterialHero({
-    Key? key,
+  const MaterialHero({
     required this.tag,
     this.child,
     this.color,

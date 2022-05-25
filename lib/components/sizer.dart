@@ -1,24 +1,26 @@
 import 'package:flutter/material.dart';
 
 class Sizer extends StatelessWidget {
-  Sizer(this.child, {Key? key, this.width, this.height, this.padding, this.horizontalAlignment, this.verticalAlignment});
+  const Sizer(this.child, {this.width, this.height, this.padding, this.horizontalAlignment, this.verticalAlignment});
 
   final Widget child;
-  final SizeGeometry? width, height;
+  final SizeGeometry? width;
+  final SizeGeometry? height;
   final EdgeInsetsGeometry? padding;
-  final MainAxisAlignment? horizontalAlignment, verticalAlignment;
+  final MainAxisAlignment? horizontalAlignment;
+  final MainAxisAlignment? verticalAlignment;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: padding ?? const EdgeInsets.all(0.0),
+      padding: padding ?? EdgeInsets.zero,
       child: Row(
         mainAxisAlignment: horizontalAlignment ?? MainAxisAlignment.start,
-        mainAxisSize: width == SizeGeometry.MATCH_PARENT ? MainAxisSize.max : MainAxisSize.min,
+        mainAxisSize: width == SizeGeometry.matchParent ? MainAxisSize.max : MainAxisSize.min,
         children: <Widget>[
           Column(
             mainAxisAlignment: verticalAlignment ?? MainAxisAlignment.start,
-            mainAxisSize: height == SizeGeometry.MATCH_PARENT ? MainAxisSize.max : MainAxisSize.min,
+            mainAxisSize: height == SizeGeometry.matchParent ? MainAxisSize.max : MainAxisSize.min,
             children: <Widget>[child],
           ),
         ],
@@ -28,6 +30,6 @@ class Sizer extends StatelessWidget {
 }
 
 enum SizeGeometry {
-  WRAP_CONTENT,
-  MATCH_PARENT,
+  wrapContent,
+  matchParent,
 }

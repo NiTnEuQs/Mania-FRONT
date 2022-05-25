@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:mania/api/RestClient.dart';
-import 'package:mania/app/Registry.dart';
-import 'package:mania/components/background.dart';
+import 'package:mania/api/rest_client.dart';
+import 'package:mania/app/registry.dart';
 import 'package:mania/components/list_messages.dart';
 import 'package:mania/components/mania_bar.dart';
+import 'package:mania/components/mania_text.dart';
 import 'package:mania/components/message.dart';
-import 'package:mania/components/whitetext.dart';
+import 'package:mania/components/writer.dart';
 import 'package:mania/custom/base_stateful_widget.dart';
-import 'package:mania/models/ApiMessage.dart';
-import 'package:mania/models/GenericResponse.dart';
-import 'package:mania/resources/colours.dart';
+import 'package:mania/models/api_message.dart';
+import 'package:mania/models/generic_response.dart';
 import 'package:mania/resources/dimensions.dart';
-import 'package:mania/utils/StringUtils.dart';
+import 'package:mania/utils/string_utils.dart';
 
 class MessageScreen extends BaseStatefulWidget {
-  MessageScreen(this.message, {Key? key}) : super(key: key);
+  const MessageScreen(this.message, {Key? key}) : super(key: key);
 
   final ApiMessage message;
 
@@ -23,71 +22,89 @@ class MessageScreen extends BaseStatefulWidget {
 }
 
 class _MessageScreenState extends LifecycleState<MessageScreen> {
-  TextEditingController _sendMessageController = new TextEditingController();
+  final TextEditingController _sendMessageController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colours.appBackground,
-      extendBodyBehindAppBar: true,
       appBar: ManiaBar(
-        title: trans(context)!.text_message,
-        leftItem: ManiaBarItem.back(context),
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+            );
+          },
+        ),
       ),
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Background(
-            shouldCountBar: true,
-            padding: const EdgeInsets.all(Dimens.marginDouble),
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(Dimens.blocCornerRadius),
-              bottomRight: Radius.circular(Dimens.blocCornerRadius),
-            ),
-            child: Message(
-              widget.message,
-              extended: true,
-              displayAvatar: true,
-              displayPseudo: true,
-            ),
-          ),
           Expanded(
-            child: FutureBuilder<GenericResponse<List<ApiMessage>>>(
-                future: RestClient.service.getMessageComments(widget.message.id),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return ListMessages(
-                      snapshot.data?.response,
-                      noDataColor: Colors.black,
-                      parentMessageId: widget.message.id,
-                      displayWriteAMessage: true,
-                      sendMessageController: _sendMessageController,
-                      onSendMessagePressed: (message) {
-                        if (!isStringEmpty(message)) {
-                          RestClient.service.publishMessage(Registry.apiUser!.id, message!, parentMessageId: widget.message.id).then((value) {
-                            if (value.success) {
-                              _sendMessageController.clear();
-                              setState(() {});
-                            }
-                          });
-                        }
-                      },
-                    );
-                  } else if (snapshot.hasError) {
-                    return Center(child: WhiteText(trans(context)!.text_errorOccurred));
-                  } else {
-                    return Center(child: CircularProgressIndicator());
-                  }
-                }),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  topMessage(),
+                  botMessage(),
+                ],
+              ),
+            ),
           ),
-          // Expanded(child: ListComments(widget.comments, onCommentPressed: widget.onCommentPressed, onUserPressed: widget.onUserPressed)),
+          Padding(
+            padding: const EdgeInsets.all(Dimens.margin),
+            child: Writer(
+              parentMessageId: widget.message.id,
+              controller: _sendMessageController,
+              onSendMessagePressed: (message) {
+                if (!isStringEmpty(message)) {
+                  RestClient.service.publishMessage(Registry.apiUser!.id, message!, parentMessageId: widget.message.id).then((value) {
+                    if (value.success) {
+                      _sendMessageController.clear();
+                      setState(() {});
+                    }
+                  });
+                }
+              },
+            ),
+          ),
         ],
       ),
     );
   }
 
-  onBackPressed() {
-    Navigator.pop(context);
+  Widget topMessage() {
+    return Padding(
+      padding: const EdgeInsets.all(Dimens.marginDouble),
+      child: Message(
+        widget.message,
+        extended: true,
+        displayAvatar: true,
+        displayPseudo: true,
+      ),
+    );
   }
 
+  Widget botMessage() {
+    return FutureBuilder<GenericResponse<List<ApiMessage>>>(
+      future: RestClient.service.getMessageComments(widget.message.id),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return Column(
+            children: [
+              ListMessages(
+                snapshot.data?.response,
+                shrinkWrap: true,
+              ),
+            ],
+          );
+        } else if (snapshot.hasError) {
+          return Center(child: ManiaText(trans(context)?.text_errorOccurred));
+        } else {
+          return const Center(child: CircularProgressIndicator());
+        }
+      },
+    );
+  }
 }

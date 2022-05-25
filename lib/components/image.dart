@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:mania/resources/dimensions.dart';
 
 class NormalImage extends StatelessWidget {
-  NormalImage(this._image, {Key? key, this.isUrl = false, this.circle, this.width, this.height, this.fit, this.onPressed});
+  const NormalImage(this._image, {this.isUrl = false, this.circle, this.width, this.height, this.fit, this.onPressed});
 
   final String? _image;
   final bool isUrl;
   final bool? circle;
-  final double? width, height;
+  final double? width;
+  final double? height;
   final BoxFit? fit;
   final VoidCallback? onPressed;
 
@@ -15,7 +16,7 @@ class NormalImage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       elevation: 4.0,
-      shape: circle ?? false ? CircleBorder() : RoundedRectangleBorder(),
+      shape: circle ?? false ? const CircleBorder() : const RoundedRectangleBorder(),
       clipBehavior: Clip.hardEdge,
       color: Colors.transparent,
       shadowColor: Colors.transparent,
@@ -34,11 +35,12 @@ class NormalImage extends StatelessWidget {
 }
 
 class RoundedImage extends StatelessWidget {
-  RoundedImage(this._image, {Key? key, this.isUrl = false, this.width, this.height, this.fit, this.onPressed});
+  const RoundedImage(this._image, {this.isUrl = false, this.width, this.height, this.fit, this.onPressed});
 
   final String? _image;
   final bool isUrl;
-  final double? width, height;
+  final double? width;
+  final double? height;
   final BoxFit? fit;
   final VoidCallback? onPressed;
 

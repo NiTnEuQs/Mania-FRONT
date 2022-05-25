@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class FullScreenScrollView extends StatelessWidget {
-  FullScreenScrollView({Key? key, this.child, this.margin});
+  const FullScreenScrollView({this.child, this.margin});
 
   final Widget? child;
   final EdgeInsets? margin;

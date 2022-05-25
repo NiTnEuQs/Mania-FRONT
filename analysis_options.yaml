@@ -1,0 +1,57 @@
+# This file configures the analyzer to use the lint rule set from `package:lint`
+
+# For apps, use the default set
+include: package:lint/analysis_options.yaml
+
+# Packages, that may be distributed (i.e. via pub.dev) should use the package
+# version, resulting in a better pub score.
+# include: package:lint/analysis_options_package.yaml
+
+# You might want to exclude auto-generated files from dart analysis
+analyzer:
+  exclude:
+    - 'build/**'
+    - 'lib/**.freezed.dart'
+    - 'lib/**.g.dart'
+    - '**/generated_plugin_registrant.dart'
+  errors:
+    invalid_annotation_target: ignore
+
+# You can customize the lint rules set to your own liking. A list of all rules
+# can be found at https://dart-lang.github.io/linter/lints/options/options.html
+linter:
+  rules:
+    # Error rules
+
+    always_use_package_imports: true
+
+    avoid_empty_else: true
+
+    avoid_relative_lib_imports: true
+
+    empty_statements: true
+
+    hash_and_equals: true
+
+    no_duplicate_case_values: true
+
+    no_logic_in_create_state: true
+
+    prefer_void_to_null: true
+
+    unnecessary_statements: true
+
+    # Style
+
+    always_declare_return_types: true
+
+    avoid_classes_with_only_static_members: false
+
+    prefer_const_declarations: true
+
+    sort_constructors_first: true
+
+    sort_pub_dependencies: false
+
+#    implementation_imports: false
+

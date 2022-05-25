@@ -1,22 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:mania/app/Utils.dart';
-import 'package:mania/components/background.dart';
 import 'package:mania/components/mania_bar.dart';
+import 'package:mania/components/mania_text.dart';
 import 'package:mania/components/project_tile.dart';
-import 'package:mania/components/whitetext.dart';
-import 'package:mania/models/ApiProject.dart';
-import 'package:mania/resources/colours.dart';
+import 'package:mania/custom/base_stateful_widget.dart';
+import 'package:mania/models/api_project.dart';
 import 'package:mania/resources/dimensions.dart';
 
-class ProjectsScreen extends StatefulWidget {
-  ProjectsScreen({Key? key}) : super(key: key);
+class ProjectsScreen extends BaseStatefulWidget {
+  const ProjectsScreen({Key? key}) : super(key: key);
 
   @override
   _ProjectsScreenState createState() => _ProjectsScreenState();
 }
 
-class _ProjectsScreenState extends State<ProjectsScreen> {
-  List<ApiProject> _projects = [];
+class _ProjectsScreenState extends BaseState<ProjectsScreen> {
+  final List<ApiProject> _projects = [];
 
   @override
   void initState() {
@@ -33,48 +31,45 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colours.appBackground,
-      extendBodyBehindAppBar: true,
       appBar: ManiaBar(
-        leftItem: ManiaBarItem.back(context),
-        rightItem: ManiaBarItem(
-          icon: Icons.add,
-          onItemPressed: onAddProjectPressed,
-        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: IconButton(
+              icon: Icon(
+                Icons.add,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              onPressed: onAddProjectPressed,
+            ),
+          ),
+        ],
       ),
-      body: Background(
-        shouldCountBar: true,
-        child: Container(
-          padding: const EdgeInsets.all(Dimens.margin),
-          child: _projects.length > 0
-              ? GridView.builder(
-                  itemCount: _projects.length,
-                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent: 200,
-                    childAspectRatio: 2 / 2,
-                    crossAxisSpacing: 0,
-                    mainAxisSpacing: 0,
-                  ),
-                  padding: const EdgeInsets.all(0),
-                  itemBuilder: (BuildContext context, int index) {
-                    ApiProject apiProject = _projects[index];
-                    return ProjectTile(
-                      apiProject,
-                      onPressed: onProjectPressed,
-                    );
-                  },
-                )
-              : Center(child: WhiteText(trans(context)!.text_emptyList)),
-        ),
+      body: Container(
+        padding: const EdgeInsets.all(Dimens.margin),
+        child: _projects.isNotEmpty
+            ? GridView.builder(
+                itemCount: _projects.length,
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                  maxCrossAxisExtent: 200,
+                ),
+                padding: EdgeInsets.zero,
+                itemBuilder: (BuildContext context, int index) {
+                  final ApiProject apiProject = _projects[index];
+                  return ProjectTile(
+                    apiProject,
+                    onPressed: onProjectPressed,
+                  );
+                },
+              )
+            : Center(child: ManiaText(trans(context)?.text_emptyList)),
       ),
     );
   }
 
-  onProjectPressed() {
-    print("Project pressed");
-  }
+  void onProjectPressed() {}
 
-  onAddProjectPressed() {
+  void onAddProjectPressed() {
     _projects.add(ApiProject(id: 0, title: "Royaumes", color: Colors.red));
 
     setState(() {});

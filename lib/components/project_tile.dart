@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mania/app/Registry.dart';
+import 'package:mania/app/registry.dart';
 import 'package:mania/components/image.dart';
-import 'package:mania/components/whitetext.dart';
-import 'package:mania/models/ApiProject.dart';
+import 'package:mania/components/mania_text.dart';
+import 'package:mania/models/api_project.dart';
 import 'package:mania/resources/dimensions.dart';
 
 class ProjectTile extends StatelessWidget {
@@ -29,7 +29,7 @@ class ProjectTile extends StatelessWidget {
                 height: Dimens.profileAvatarSize,
               ),
             ),
-            WhiteText(project?.title ?? ""),
+            ManiaText(project?.title ?? ""),
           ],
         ),
       ),

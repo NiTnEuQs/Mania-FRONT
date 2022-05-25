@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:mania/resources/herotags.dart';
+import 'package:mania/resources/hero_tags.dart';
 
 class Logo extends StatelessWidget {
-  Logo({Key? key});
+  const Logo();
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Hero(
-        tag: HeroTags.SPLASH_LOGO,
-        child: Image.asset(
-          'assets/images/ic_foreground.png',
-        ),
+    return Hero(
+      tag: HeroTags.splashLogo,
+      child: Image.asset(
+        'assets/images/ic_foreground.png',
       ),
     );
   }

@@ -1,5 +1,12 @@
-# Retrofit
+# Custom
+localizations_error.txt
+
+# Generated
 *.g.dart
+*.freezed.dart
+
+# iOS
+ios/build/
 
 # Miscellaneous
 *.class

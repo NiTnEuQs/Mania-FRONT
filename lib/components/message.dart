@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:mania/app/Utils.dart';
-import 'package:mania/components/bloc.dart';
 import 'package:mania/components/image.dart';
+import 'package:mania/components/mania_text.dart';
 import 'package:mania/components/material_hero.dart';
-import 'package:mania/components/whitetext.dart';
-import 'package:mania/extensions/DateTimeExtension.dart';
-import 'package:mania/models/ApiMessage.dart';
-import 'package:mania/models/ApiUser.dart';
+import 'package:mania/components/rounded_button.dart';
+import 'package:mania/custom/base_stateful_widget.dart';
+import 'package:mania/extensions/date_time_extension.dart';
+import 'package:mania/models/api_message.dart';
+import 'package:mania/models/api_user.dart';
 import 'package:mania/resources/dimensions.dart';
-import 'package:mania/resources/herotags.dart';
+import 'package:mania/resources/hero_tags.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-class Message extends StatefulWidget {
-  Message(
+class Message extends BaseStatefulWidget {
+  const Message(
     this.message, {
-    Key? key,
     this.extended = false,
     this.displayAvatar = false,
     this.displayPseudo = false,
@@ -27,62 +26,62 @@ class Message extends StatefulWidget {
 
   final ApiMessage message;
   final bool extended;
-  final bool? displayAvatar, displayPseudo, displayNbComments, displayNbViews, displayTimestamp;
+  final bool? displayAvatar;
+  final bool? displayPseudo;
+  final bool? displayNbComments;
+  final bool? displayNbViews;
+  final bool? displayTimestamp;
   final Function(ApiMessage)? onMessagePressed;
   final Function(ApiUser)? onUserPressed;
 
   @override
-  State<Message> createState() => _MessageState();
+  _MessageState createState() => _MessageState();
 }
 
-class _MessageState extends State<Message> {
+class _MessageState extends BaseState<Message> {
   @override
   Widget build(BuildContext context) {
-    String _messageDate =
+    final String _messageDate =
         widget.extended ? widget.message.timestamp.toCorrectLocal().toCorrectFormat() : timeago.format(widget.message.timestamp.toCorrectLocal());
 
-    return Container(
-      color: Colors.transparent,
-      padding: widget.extended ? const EdgeInsets.all(0) : const EdgeInsets.all(Dimens.halfMargin),
-      child: Bloc(
-        onTap: (widget.onMessagePressed != null) ? () => widget.onMessagePressed!(widget.message) : null,
-        color: widget.extended ? Colors.transparent : Theme.of(context).backgroundColor,
-        shadow: !widget.extended,
-        padding: widget.extended ? const EdgeInsets.all(0) : const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            if ((widget.displayAvatar ?? true) || (widget.displayPseudo ?? true))
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
+    return RoundedContainer(
+      onPressed: (widget.onMessagePressed != null) ? () => widget.onMessagePressed!(widget.message) : null,
+      color: widget.extended ? Colors.transparent : Theme.of(context).backgroundColor,
+      padding: widget.extended ? EdgeInsets.zero : const EdgeInsets.all(16.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          if ((widget.displayAvatar ?? true) || (widget.displayPseudo ?? true))
+            RoundedContainer(
+              radius: 50,
+              color: Colors.transparent,
+              onPressed: () {
+                if (widget.onUserPressed != null) {
+                  widget.onUserPressed!(widget.message.user);
+                } else {
+                  defaultOnUserPressed(context, widget.message.user);
+                }
+              },
+              child: Row(
                 children: [
                   if (widget.displayAvatar ?? true)
                     MaterialHero(
-                      tag: widget.extended ? '${HeroTags.PROFILE_AVATAR}${widget.message.user.id}' : '${HeroTags.MESSAGE_AVATAR}${widget.message.id}',
+                      tag: widget.extended ? '${HeroTags.profileAvatar}${widget.message.user.id}' : '${HeroTags.messageAvatar}${widget.message.id}',
                       child: RoundedImage(
                         widget.message.user.imageUrl,
-                        onPressed: () {
-                          if (widget.onUserPressed != null)
-                            widget.onUserPressed!(widget.message.user);
-                          else
-                            defaultOnUserPressed(context, widget.message.user);
-                        },
                         width: widget.extended ? Dimens.extendedMessageAvatarSize : Dimens.messageAvatarSize,
                         height: widget.extended ? Dimens.extendedMessageAvatarSize : Dimens.messageAvatarSize,
                         isUrl: true,
                       ),
                     ),
-                  SizedBox(width: Dimens.margin),
+                  const SizedBox(width: Dimens.margin),
                   if (widget.displayPseudo ?? true)
                     Expanded(
                       child: MaterialHero(
-                        tag: widget.extended ? '${HeroTags.PROFILE_PSEUDO}${widget.message.user.id}' : '${HeroTags.MESSAGE_PSEUDO}${widget.message.id}',
-                        child: WhiteText(
+                        tag: widget.extended ? '${HeroTags.profilePseudo}${widget.message.user.id}' : '${HeroTags.messagePseudo}${widget.message.id}',
+                        child: ManiaText(
                           widget.message.user.pseudo,
-                          onPressed: widget.onUserPressed != null ? () => widget.onUserPressed!(widget.message.user) : null,
-                          color: widget.extended ? Colors.white : Theme.of(context).textTheme.headline6?.color,
                           boldest: true,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -91,59 +90,58 @@ class _MessageState extends State<Message> {
                     ),
                 ],
               ),
-            SizedBox(height: (widget.displayAvatar ?? true) || (widget.displayPseudo ?? true) ? Dimens.marginDouble : 0),
-            MaterialHero(
-              tag: '${HeroTags.MESSAGE_TEXT}${widget.message.id}',
-              child: WhiteText(
-                widget.message.text,
-                color: widget.extended ? Colors.white : Theme.of(context).textTheme.bodyText1?.color,
-                fontDimension: widget.extended ? TextDimension.XXL : null,
-              ),
             ),
-            SizedBox(height: Dimens.marginDouble),
-            if ((widget.displayNbComments ?? true) || (widget.displayTimestamp ?? true))
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  if (widget.displayNbComments ?? true)
-                    MaterialHero(
-                      tag: '${HeroTags.MESSAGE_NB_COMMENTS}${widget.message.id}',
-                      child: WhiteText(
-                        trans(context)!.comment(widget.message.nbComments ?? 0),
-                        color: widget.extended ? Colors.white : Colors.grey,
-                        fontDimension: TextDimension.XS,
-                        bold: true,
-                      ),
+          SizedBox(height: (widget.displayAvatar ?? true) || (widget.displayPseudo ?? true) ? Dimens.marginDouble : 0),
+          MaterialHero(
+            tag: '${HeroTags.messageText}${widget.message.id}',
+            child: ManiaText(
+              widget.message.text,
+              fontDimension: widget.extended ? TextDimension.xxl : null,
+            ),
+          ),
+          const SizedBox(height: Dimens.marginDouble),
+          if ((widget.displayNbComments ?? true) || (widget.displayTimestamp ?? true))
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                if (widget.displayNbComments ?? true)
+                  MaterialHero(
+                    tag: '${HeroTags.messageNbComments}${widget.message.id}',
+                    child: ManiaText(
+                      trans(context)?.comment(widget.message.nbComments ?? 0),
+                      color: Colors.grey,
+                      fontDimension: TextDimension.xs,
+                      bold: true,
                     ),
-                  if (widget.displayNbViews ?? true)
-                    MaterialHero(
-                      tag: '${HeroTags.MESSAGE_NB_VIEWS}${widget.message.id}',
-                      child: WhiteText(
-                        trans(context)!.view(widget.message.nbViews ?? 0),
-                        color: widget.extended ? Colors.white : Colors.grey,
-                        fontDimension: TextDimension.XS,
-                        bold: true,
-                      ),
+                  ),
+                if (widget.displayNbViews ?? true)
+                  MaterialHero(
+                    tag: '${HeroTags.messageNbViews}${widget.message.id}',
+                    child: ManiaText(
+                      trans(context)?.view(widget.message.nbViews ?? 0),
+                      color: Colors.grey,
+                      fontDimension: TextDimension.xs,
+                      bold: true,
                     ),
-                  if (widget.displayTimestamp ?? true)
-                    MaterialHero(
-                      tag: '${HeroTags.MESSAGE_TIMESTAMP}${widget.message.id}',
-                      child: WhiteText(
-                        _messageDate,
-                        color: widget.extended ? Colors.white : Colors.grey,
-                        fontDimension: TextDimension.XS,
-                        bold: true,
-                      ),
+                  ),
+                if (widget.displayTimestamp ?? true)
+                  MaterialHero(
+                    tag: '${HeroTags.messageTimestamp}${widget.message.id}',
+                    child: ManiaText(
+                      _messageDate,
+                      color: Colors.grey,
+                      fontDimension: TextDimension.xs,
+                      bold: true,
                     ),
-                ],
-              ),
-          ],
-        ),
+                  ),
+              ],
+            ),
+        ],
       ),
     );
   }
 
-  defaultOnUserPressed(BuildContext context, ApiUser user) {
+  void defaultOnUserPressed(BuildContext context, ApiUser user) {
     Navigator.pushNamed(context, '/profile', arguments: user);
   }
 }

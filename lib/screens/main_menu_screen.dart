@@ -1,30 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter_riverpod/src/consumer.dart';
-import 'package:mania/app/Prefs.dart';
-import 'package:mania/app/Registry.dart';
-import 'package:mania/app/System.dart';
-import 'package:mania/components/ConditionalWidget.dart';
-import 'package:mania/components/background.dart';
-import 'package:mania/components/gradientmask.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mania/app/prefs.dart';
+import 'package:mania/app/registry.dart';
 import 'package:mania/components/image.dart';
-import 'package:mania/components/list_messages.dart';
+import 'package:mania/components/mania_bar.dart';
+import 'package:mania/components/mania_text.dart';
 import 'package:mania/components/material_hero.dart';
-import 'package:mania/components/whitetext.dart';
 import 'package:mania/custom/base_stateful_widget.dart';
-import 'package:mania/handlers/FirebaseHandler.dart';
-import 'package:mania/models/ApiMessage.dart';
-import 'package:mania/models/ApiUser.dart';
-import 'package:mania/providers/UserFollowingsProvider.dart';
-import 'package:mania/providers/UserLoggedProvider.dart';
+import 'package:mania/extensions/theme_mode_extension.dart';
+import 'package:mania/handlers/firebase_handler.dart';
+import 'package:mania/models/api_user.dart';
+import 'package:mania/providers/arguments/args_recent_notifications.dart';
+import 'package:mania/providers/should_update_provider.dart';
+import 'package:mania/providers/theme_mode_provider.dart';
+import 'package:mania/providers/user_followings_provider.dart';
+import 'package:mania/providers/user_logged_provider.dart';
 import 'package:mania/resources/colours.dart';
 import 'package:mania/resources/dimensions.dart';
-import 'package:mania/resources/herotags.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:mania/resources/hero_tags.dart';
+import 'package:mania/screens/pages/notifications_page.dart';
 
 class MainMenuScreen extends BaseStatefulWidget {
-  MainMenuScreen({
+  const MainMenuScreen({
     Key? key,
     this.scaffoldKey,
     this.onMenuPressed,
@@ -33,7 +30,8 @@ class MainMenuScreen extends BaseStatefulWidget {
   }) : super(key: key);
 
   final GlobalKey<ScaffoldState>? scaffoldKey;
-  final VoidCallback? onMenuPressed, onSearchPressed;
+  final VoidCallback? onMenuPressed;
+  final VoidCallback? onSearchPressed;
   final DrawerCallback? onDrawerChanged;
 
   @override
@@ -42,204 +40,135 @@ class MainMenuScreen extends BaseStatefulWidget {
 
 class _MainMenuPageState extends LifecycleState<MainMenuScreen> {
   late ApiUser _user;
-  late List<ApiMessage> _recentMessages;
 
-  bool _displayFloatingActionButton = false;
-  ScrollController _listMessagesController = new ScrollController();
-  ScrollController _listMessagesChildController = new ScrollController();
-  RefreshController _refreshController = RefreshController(initialRefresh: false);
+  // int _page = 0;
 
-  @override
-  void initState() {
-    super.initState();
-
-    _listMessagesController.addListener(() {
-      if (_listMessagesController.offset > 100.0) {
-        if (!_displayFloatingActionButton)
-          setState(() {
-            _displayFloatingActionButton = true;
-          });
-      } else {
-        if (_displayFloatingActionButton)
-          setState(() {
-            _displayFloatingActionButton = false;
-          });
-      }
-    });
-  }
+  // ScrollController _listMessagesController = new ScrollController();
+  // final PageController _pageViewController = PageController();
 
   @override
-  onResume() {
+  void onResume() {
     super.onResume();
 
-    ref.read(userLoggedProvider).getUser().then((value) {
-      _user = ref.watch(userLoggedProvider).user;
-      ref.read(userFollowingsProvider).getRecentMessages(userId: _user.id);
-    });
+    final bool shouldUpdate = ref.watch(shouldUpdateProvider).mainMenuScreen;
 
-    // Future.delayed(Duration(milliseconds: 350), () {
-    //   System.transparentStatusBar();
-    // });
-  }
+    if (shouldUpdate) {
+      ref.read(userLoggedProvider).getUser().then((value) {
+        _user = ref.watch(userLoggedProvider).user;
+        ref.refresh(userRecentNotificationsProvider(ArgsRecentNotifications(_user.id)));
+      });
 
-  void _onRefresh() async {
-    ref.read(userFollowingsProvider).getRecentMessages(userId: _user.id).whenComplete(
-          _refreshController.refreshCompleted,
-        );
-    // // monitor network fetch
-    // await Future.delayed(Duration(milliseconds: 1000));
-    // // if failed,use refreshFailed()
-    // _refreshController.refreshCompleted();
-  }
-
-  void _onLoading() async {
-    // // monitor network fetch
-    // await Future.delayed(Duration(milliseconds: 1000));
-    // // if failed,use loadFailed(),if no data return,use LoadNodata()
-    // // items.add((items.length + 1).toString());
-    // if (mounted) setState(() {});
-    // _refreshController.loadComplete();
+      ref.read(shouldUpdateProvider).updateMainMenuScreen(shouldUpdate: false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     _user = ref.watch(userLoggedProvider).user;
-    _recentMessages = ref.watch(userFollowingsProvider).messages;
+
+    final ThemeMode _themeMode = ref.watch(themeModeProvider);
 
     return Scaffold(
       key: widget.scaffoldKey,
-      backgroundColor: Theme.of(context).backgroundColor,
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            floating: true,
-            iconTheme: IconThemeData(color: Theme.of(context).colorScheme.secondary),
-            // title: Row(
-            //   children: [
-            //     Container(
-            //       height: 50,
-            //       child: ShaderMask(
-            //         blendMode: BlendMode.srcIn,
-            //         shaderCallback: (bounds) => LinearGradient(colors: [
-            //           Colours.secondaryColor,
-            //           Colours.primaryColor,
-            //         ]).createShader(
-            //           Rect.fromLTWH(0, 0, bounds.width, bounds.height),
-            //         ),
-            //         child: Image.asset("assets/icon/ic_foreground.png"),
-            //       ),
-            //     ),
-            //     GradientText(
-            //       trans(context)!.screen_mainMenu_title,
-            //       gradient: LinearGradient(colors: [
-            //         Colours.secondaryColor,
-            //         Colours.primaryColor,
-            //       ]),
-            //       textAlign: TextAlign.center,
-            //       fontSize: Dimens.appbarTitleSize,
-            //       maxLines: 1,
-            //       overflow: TextOverflow.visible,
-            //     ),
-            //   ],
-            // ),
-            title: Center(
-              child: Container(
-                height: 60,
-                child: GradientMask(
-                  child: Image.asset("assets/icon/ic_foreground.png"),
-                ),
-              ),
-            ),
-            actions: [
-              Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: IconButton(
-                  icon: Icon(
-                    Icons.search,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                  onPressed: widget.onSearchPressed,
-                ),
-              ),
-            ],
+      appBar: ManiaBar(
+        noLeading: true,
+        titleIcon: SizedBox(
+          height: 60,
+          child: Image.asset(
+            "assets/icon/ic_foreground.png",
+            color: Theme.of(context).colorScheme.secondary,
           ),
-          SliverFillRemaining(
-            child: Container(
-              padding: EdgeInsets.all(Dimens.halfMargin),
-              child: SmartRefresher(
-            header: WaterDropHeader(
-              refresh: Container(
-                width: 20.0,
-                height: 20.0,
-                child: CircularProgressIndicator(
-                  color: Colors.white,
-                  strokeWidth: 2.0,
-                ),
-                    ),
-                      waterDropColor: Theme.of(context).colorScheme.secondary,
-                      complete: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          GradientMask(
-                            child: Icon(
-                              Icons.done,
-                              color: Theme.of(context).colorScheme.secondary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    onRefresh: _onRefresh,
-                    onLoading: _onLoading,
-                    controller: _refreshController,
-                    scrollController: _listMessagesController,
-                    child: ConditionalWidget(
-                      conditions: _recentMessages.isNotEmpty,
-                      child: ListMessages(
-                        _recentMessages,
-                        controller: _listMessagesChildController,
-                        displayAvatar: true,
-                        displayPseudo: true,
-                        displayWriteAMessage: true,
-                        openExtendedWriter: true,
-
-                  ),
-                ),
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: IconButton(
+              icon: Icon(
+                Icons.search,
+                color: Theme.of(context).colorScheme.secondary,
               ),
+              onPressed: widget.onSearchPressed,
             ),
           ),
         ],
       ),
-      floatingActionButton: _displayFloatingActionButton
-          ? FloatingActionButton(
-        child: Icon(Icons.arrow_upward),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-              onPressed: () {
-                _listMessagesController.animateTo(0, duration: Duration(milliseconds: 500), curve: Curves.ease);
-              },
-            )
-          : null,
+      body: const NotificationsPage(),
+      // body: PageView(
+      //   controller: _pageViewController,
+      //   onPageChanged: (index) {
+      //     setState(() {
+      //       _page = index;
+      //     });
+      //   },
+      //   children: const [
+      //     NotificationsPage(),
+      //   ],
+      // ),
+      // bottomNavigationBar: GradientMask(
+      //   child: Container(
+      //     decoration: BoxDecoration(border: Border(top: BorderSide(color: Colors.white, width: 1))),
+      //     child: BottomNavigationBar(
+      //       currentIndex: _page,
+      //       backgroundColor: Colors.transparent,
+      //       onTap: (index) {
+      //         setState(() {
+      //           _pageViewController.animateToPage(index, duration: Duration(milliseconds: 500), curve: Curves.ease).then(
+      //             (value) {
+      //               _page = index;
+      //             },
+      //           );
+      //         });
+      //       },
+      //       items: [
+      //         BottomNavigationBarItem(
+      //           icon: Icon(Icons.home_outlined),
+      //           activeIcon: Icon(Icons.home),
+      //           label: 'Home',
+      //         ),
+      //         BottomNavigationBarItem(
+      //           icon: Icon(Icons.search_outlined),
+      //           activeIcon: Icon(Icons.search),
+      //           label: 'Search',
+      //         ),
+      //         BottomNavigationBarItem(
+      //           icon: Icon(Icons.notifications_outlined),
+      //           activeIcon: Icon(Icons.notifications),
+      //           label: 'Notifications',
+      //         )
+      //       ],
+      //     ),
+      //   ),
+      // ),
+      // floatingActionButton: _displayFloatingActionButton
+      //     ? FloatingActionButton(
+      //         child: Icon(Icons.arrow_upward),
+      //         backgroundColor: Theme.of(context).colorScheme.primary,
+      //         onPressed: () {
+      //           _listMessagesController.animateTo(0, duration: Duration(milliseconds: 500), curve: Curves.ease);
+      //         },
+      //       )
+      //     : null,
       drawerEdgeDragWidth: MediaQuery.of(context).size.width,
       drawer: Drawer(
-        child: Background(
-          padding: EdgeInsets.zero,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        child: SafeArea(
           child: ListView(
             padding: EdgeInsets.zero,
             children: [
               Container(
-                height: Dimens.topDrawer,
-                child: DrawerHeader(
+                padding: const EdgeInsets.all(Dimens.margin),
+                child: Container(
+                  padding: const EdgeInsets.all(Dimens.marginDouble),
                   decoration: BoxDecoration(
-                    color: Colours.blackOverlay,
+                    color: Colours.primaryColor,
+                    borderRadius: BorderRadius.circular(Dimens.blocCornerRadius),
                   ),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       MaterialHero(
-                        tag: '${HeroTags.PROFILE_AVATAR}${_user.id}',
+                        tag: '${HeroTags.profileAvatar}${_user.id}',
                         child: RoundedImage(
                           _user.imageUrl,
                           onPressed: onDrawerProfilePressed,
@@ -248,14 +177,15 @@ class _MainMenuPageState extends LifecycleState<MainMenuScreen> {
                           isUrl: true,
                         ),
                       ),
+                      const SizedBox(height: Dimens.marginDouble),
                       Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           MaterialHero(
-                            tag: '${HeroTags.PROFILE_PSEUDO}${_user.id}',
-                            child: WhiteText(
-                              "${_user.pseudo}",
+                            tag: '${HeroTags.profilePseudo}${_user.id}',
+                            child: ManiaText.white(
+                              _user.pseudo,
                               boldest: true,
                             ),
                           ),
@@ -263,16 +193,16 @@ class _MainMenuPageState extends LifecycleState<MainMenuScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               MaterialHero(
-                                tag: '${HeroTags.PROFILE_FOLLOWERS}${_user.id}',
-                                child: WhiteText(
-                                  "${trans(context)!.follower(_user.nbFollowers ?? 0)}",
+                                tag: '${HeroTags.profileFollowers}${_user.id}',
+                                child: ManiaText.white(
+                                  trans(context)?.follower(_user.nbFollowers ?? 0),
                                   onPressed: onDrawerFollowersPressed,
                                 ),
                               ),
                               MaterialHero(
-                                tag: '${HeroTags.PROFILE_FOLLOWINGS}${_user.id}',
-                                child: WhiteText(
-                                  "${trans(context)!.following(_user.nbFollowings ?? 0)}",
+                                tag: '${HeroTags.profileFollowings}${_user.id}',
+                                child: ManiaText.white(
+                                  trans(context)?.following(_user.nbFollowings ?? 0),
                                   onPressed: onDrawerFollowingsPressed,
                                 ),
                               ),
@@ -285,39 +215,53 @@ class _MainMenuPageState extends LifecycleState<MainMenuScreen> {
                 ),
               ),
               ListTile(
-                leading: Icon(Icons.person, color: Colors.white),
-                title: WhiteText(trans(context)!.text_profile),
+                leading: const Icon(Icons.person),
+                title: ManiaText(trans(context)?.text_profile),
                 onTap: onDrawerProfilePressed,
               ),
+              // ListTile(
+              //   leading: Icon(MdiIcons.gift, color: Colors.white),
+              //   title: ManiaText(trans(context)!.text_giveaways),
+              //   onTap: onDrawerGiveawaysPressed,
+              // ),
+              // if (Registry.twitchUser != null)
+              //   ListTile(
+              //     leading: Icon(MdiIcons.gamepadVariant, color: Colors.white),
+              //     title: ManiaText(trans(context)!.text_game_viewers),
+              //     onTap: onDrawerGameViewersPressed,
+              //   ),
+              // ListTile(
+              //   leading: Icon(Icons.bolt, color: Colors.white),
+              //   title: ManiaText(trans(context)!.text_projects),
+              //   onTap: onDrawerProjectsPressed,
+              // ),
+              // ListTile(
+              //   leading: Icon(Icons.settings, color: Colors.white),
+              //   title: ManiaText(trans(context)!.text_settings),
+              //   onTap: onDrawerSettingsPressed,
+              // ),
               ListTile(
-                leading: Icon(MdiIcons.gift, color: Colors.white),
-                title: WhiteText(trans(context)!.text_giveaways),
-                onTap: onDrawerGiveawaysPressed,
-              ),
-              if (Registry.twitchUser != null)
-                ListTile(
-                  leading: Icon(MdiIcons.gamepadVariant, color: Colors.white),
-                  title: WhiteText(trans(context)!.text_game_viewers),
-                  onTap: onDrawerGameViewersPressed,
+                leading: Icon(
+                  _themeMode.isDark()
+                      ? Icons.dark_mode
+                      : _themeMode.isLight()
+                          ? Icons.light_mode
+                          : Icons.api,
                 ),
-              ListTile(
-                leading: Icon(Icons.bolt, color: Colors.white),
-                title: WhiteText(trans(context)!.text_projects),
-                onTap: onDrawerProjectsPressed,
-              ),
-              ListTile(
-                leading: Icon(Icons.settings, color: Colors.white),
-                title: WhiteText(trans(context)!.text_settings),
-                onTap: onDrawerSettingsPressed,
-              ),
-              ListTile(
-                leading: Icon(System.isDarkMode() ? Icons.light_mode : Icons.dark_mode, color: Colors.white),
-                title: WhiteText(System.isDarkMode() ? trans(context)!.text_light_mode : trans(context)!.text_dark_mode),
+                title: ManiaText(
+                  _themeMode.isDark()
+                      ? trans(context)?.text_darkMode
+                      : _themeMode.isLight()
+                          ? trans(context)?.text_lightMode
+                          : trans(context)?.text_systemMode,
+                ),
                 onTap: onDrawerThemeModePressed,
               ),
               ListTile(
-                leading: Icon(Icons.logout, color: Colors.white),
-                title: WhiteText(trans(context)!.text_logout),
+                leading: const Icon(Icons.logout),
+                title: ManiaText(
+                  trans(context)?.text_logout,
+                ),
                 onTap: onDrawerLogoutPressed,
               ),
             ],
@@ -328,61 +272,59 @@ class _MainMenuPageState extends LifecycleState<MainMenuScreen> {
     );
   }
 
-  onDrawerFollowingsPressed() {
+  void onDrawerFollowingsPressed() {
     Navigator.pop(context);
     Navigator.pushNamed(context, "/followings", arguments: _user);
   }
 
-  onDrawerFollowersPressed() {
+  void onDrawerFollowersPressed() {
     Navigator.pop(context);
     Navigator.pushNamed(context, "/followers", arguments: _user);
   }
 
-  onDrawerProfilePressed() {
+  void onDrawerProfilePressed() {
     Navigator.pop(context);
 
     Navigator.pushNamed(context, "/profile", arguments: _user);
   }
 
-  onDrawerGiveawaysPressed() {
+  void onDrawerGiveawaysPressed() {
     Navigator.pop(context);
 
     Navigator.pushNamed(context, "/giveaways");
   }
 
-  onDrawerGameViewersPressed() {
+  void onDrawerGameViewersPressed() {
     Navigator.pop(context);
 
     Navigator.pushNamed(context, "/gameviewers");
   }
 
-  onDrawerProjectsPressed() {
+  void onDrawerProjectsPressed() {
     Navigator.pop(context);
 
     Navigator.pushNamed(context, "/projects");
   }
 
-  onDrawerSettingsPressed() {
+  void onDrawerSettingsPressed() {
     Navigator.pop(context);
 
     Navigator.pushNamed(context, "/settings");
   }
 
-  onDrawerThemeModePressed() {
-    Navigator.pop(context);
+  void onDrawerThemeModePressed() {
+    final ThemeModeNotifier _themeModeNotifier = ref.read(themeModeProvider.notifier);
 
-    if (System.isDarkMode()) {
-      System.themeMode = ThemeMode.light;
-    } else if (System.isLightMode()) {
-      System.themeMode = ThemeMode.system;
+    if (_themeModeNotifier.isDark()) {
+      _themeModeNotifier.setLight();
+    } else if (_themeModeNotifier.isLight()) {
+      _themeModeNotifier.setSystem();
     } else {
-      System.themeMode = ThemeMode.dark;
+      _themeModeNotifier.setDark();
     }
-
-    setState(() {});
   }
 
-  onDrawerLogoutPressed() {
+  void onDrawerLogoutPressed() {
     if (Registry.firebaseUser != null) {
       FirebaseHandler.signOut(context: context).then((value) {
         Registry.firebaseUser = null;

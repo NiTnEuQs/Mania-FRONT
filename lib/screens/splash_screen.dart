@@ -1,17 +1,18 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/src/consumer.dart';
-import 'package:mania/app/Prefs.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mania/app/prefs.dart';
 import 'package:mania/components/background.dart';
 import 'package:mania/components/logo.dart';
 import 'package:mania/custom/base_stateful_widget.dart';
-import 'package:mania/handlers/FirebaseHandler.dart';
-import 'package:mania/handlers/TwitchHandler.dart';
+import 'package:mania/handlers/firebase_handler.dart';
+import 'package:mania/handlers/twitch_handler.dart';
 import 'package:mania/screens/login_screen.dart';
 
 class SplashScreen extends BaseStatefulWidget {
-  SplashScreen({Key? key}) : super(key: key);
+  const SplashScreen({Key? key}) : super(key: key);
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _SplashScreenState();
@@ -22,7 +23,7 @@ class _SplashScreenState extends BaseState<SplashScreen> {
   void initState() {
     super.initState();
 
-    initialize();
+    initialize(ref);
   }
 
   @override
@@ -31,7 +32,7 @@ class _SplashScreenState extends BaseState<SplashScreen> {
       body: Background(
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 64.0),
-          child: Center(
+          child: const Center(
             child: Logo(),
           ),
         ),
@@ -39,9 +40,10 @@ class _SplashScreenState extends BaseState<SplashScreen> {
     );
   }
 
-  initialize() {
-    Future.delayed(Duration(seconds: 1), () {
+  void initialize(WidgetRef ref) {
+    Future.delayed(const Duration(seconds: 1), () {
       Prefs.initialize().then((value) {
+        Prefs.setup(ref);
         // initializeDateFormatting(System.countryCode, null).then((value) {
         Future.wait([
           FirebaseHandler.initialize(),
@@ -49,14 +51,16 @@ class _SplashScreenState extends BaseState<SplashScreen> {
         ]).then((List responses) {
           onInitializationFinished();
         }).catchError((e) {
-          print('Error: $e');
+          if (kDebugMode) {
+            print('Error: $e');
+          }
         });
         // });
       });
     });
   }
 
-  onInitializationFinished() {
+  void onInitializationFinished() {
     LoginScreen.nextScreen(context);
   }
 }

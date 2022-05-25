@@ -1,22 +1,23 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:mania/api/RestClient.dart';
-import 'package:mania/app/Registry.dart';
-import 'package:mania/app/Utils.dart';
-import 'package:mania/components/background.dart';
+import 'package:mania/api/rest_client.dart';
+import 'package:mania/app/registry.dart';
 import 'package:mania/components/image.dart';
 import 'package:mania/components/mania_bar.dart';
+import 'package:mania/components/mania_button.dart';
+import 'package:mania/components/mania_text.dart';
 import 'package:mania/components/material_hero.dart';
-import 'package:mania/components/transparentinput.dart';
-import 'package:mania/components/whitebutton.dart';
-import 'package:mania/models/ApiUser.dart';
+import 'package:mania/components/transparent_input.dart';
+import 'package:mania/custom/base_stateful_widget.dart';
+import 'package:mania/models/api_user.dart';
 import 'package:mania/resources/dimensions.dart';
-import 'package:mania/resources/herotags.dart';
+import 'package:mania/resources/hero_tags.dart';
 
-class ProfileEditScreen extends StatefulWidget {
+class ProfileEditScreen extends BaseStatefulWidget {
   const ProfileEditScreen(this.user, {Key? key}) : super(key: key);
 
   final ApiUser user;
@@ -25,8 +26,8 @@ class ProfileEditScreen extends StatefulWidget {
   _ProfileEditScreenState createState() => _ProfileEditScreenState();
 }
 
-class _ProfileEditScreenState extends State<ProfileEditScreen> {
-  TextEditingController _bioController = TextEditingController();
+class _ProfileEditScreenState extends BaseState<ProfileEditScreen> {
+  final TextEditingController _bioController = TextEditingController();
   File? avatarFile;
 
   @override
@@ -39,63 +40,76 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true,
       extendBody: true,
       appBar: ManiaBar(
-        title: trans(context)!.screen_editProfile_title,
-        leftItem: ManiaBarItem.back(context),
+        title: trans(context)?.screen_editProfile_title,
       ),
-      body: Background(
+      body: Padding(
         padding: const EdgeInsets.all(Dimens.marginDouble),
-        shouldCountBar: true,
-        child: Column(
-          children: [
-            Row(
-              children: [
-                MaterialHero(
-                  tag: '${HeroTags.PROFILE_AVATAR}${Registry.apiUser?.id}',
-                  child: avatarFile != null
-                      ? InkWell(
-                          onTap: onAvatarPressed,
-                          child: ClipOval(
-                            child: Image.file(
-                              avatarFile!,
-                              fit: BoxFit.cover,
-                              height: Dimens.profileAvatarSize,
-                              width: Dimens.profileAvatarSize,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  MaterialHero(
+                    tag: '${HeroTags.profileAvatar}${Registry.apiUser?.id}',
+                    child: avatarFile != null
+                        ? InkWell(
+                            onTap: onAvatarPressed,
+                            child: ClipOval(
+                              child: Image.file(
+                                avatarFile!,
+                                fit: BoxFit.cover,
+                                height: Dimens.profileAvatarSize,
+                                width: Dimens.profileAvatarSize,
+                              ),
                             ),
+                          )
+                        : RoundedImage(
+                            Registry.apiUser?.imageUrl,
+                            isUrl: avatarFile == null,
+                            height: Dimens.profileAvatarSize,
+                            width: Dimens.profileAvatarSize,
+                            onPressed: onAvatarPressed,
                           ),
-                        )
-                      : RoundedImage(
-                          Registry.apiUser?.imageUrl,
-                          isUrl: avatarFile == null,
-                          height: Dimens.profileAvatarSize,
-                          width: Dimens.profileAvatarSize,
-                          onPressed: onAvatarPressed,
-                        ),
+                  ),
+                  const SizedBox(width: Dimens.margin),
+                  Expanded(
+                    child: MaterialHero(
+                      tag: '${HeroTags.profilePseudo}${Registry.apiUser?.id}',
+                      child: ManiaText(
+                        Registry.apiUser?.pseudo,
+                        boldest: true,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: Dimens.marginDouble),
+              MaterialHero(
+                tag: '${HeroTags.profileDescription}${Registry.apiUser?.id}',
+                child: TransparentInput(
+                  controller: _bioController,
+                  placeholder: trans(context)?.placeholder_writeADescription,
+                  keyboardType: TextInputType.multiline,
                 ),
-              ],
-            ),
-            SizedBox(height: Dimens.marginDouble),
-            TransparentInput(
-              controller: _bioController,
-              // expands: true,
-              placeholder: trans(context)!.placeholder_writeADescription,
-              keyboardType: TextInputType.multiline,
-              maxLines: null,
-            ),
-            SizedBox(height: Dimens.marginDouble),
-            WhiteButton(
-              trans(context)!.text_save,
-              onPressed: onSavePressed,
-            ),
-          ],
+              ),
+              const SizedBox(height: Dimens.marginDouble),
+              ManiaButton(
+                trans(context)?.text_save,
+                onPressed: onSavePressed,
+              ),
+              const SizedBox(height: Dimens.margin),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  onAvatarPressed() {
+  void onAvatarPressed() {
     // pickImage();
   }
 
@@ -106,17 +120,19 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
 
       final imageTmp = File(image.path);
       setState(() {
-        this.avatarFile = imageTmp;
+        avatarFile = imageTmp;
       });
     } on PlatformException catch (e) {
-      print("Failed to pick image: $e");
+      if (kDebugMode) {
+        print("Failed to pick image: $e");
+      }
     }
   }
 
-  onSavePressed() {
+  void onSavePressed() {
     if (Registry.apiUser != null) {
-      String newBio = _bioController.value.text;
-      File? newAvatar = this.avatarFile;
+      final String newBio = _bioController.value.text;
+      final File? newAvatar = avatarFile;
 
       RestClient.service.editProfile(Registry.apiUser!.id, bio: newBio, avatar: newAvatar).then((value) {
         if (value.success) {

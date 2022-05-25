@@ -1,24 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mania/app/Const.dart';
-import 'package:mania/app/Registry.dart';
-import 'package:mania/app/Utils.dart';
+import 'package:mania/app/const.dart';
+import 'package:mania/app/registry.dart';
 import 'package:mania/components/background.dart';
 import 'package:mania/components/image.dart';
 import 'package:mania/components/logo.dart';
-import 'package:mania/components/roundedoutline.dart';
-import 'package:mania/components/whitetext.dart';
+import 'package:mania/components/mania_text.dart';
+import 'package:mania/components/rounded_button.dart';
 import 'package:mania/custom/base_stateful_widget.dart';
-import 'package:mania/handlers/FirebaseHandler.dart';
-import 'package:mania/handlers/TwitchHandler.dart';
+import 'package:mania/handlers/firebase_handler.dart';
+import 'package:mania/handlers/twitch_handler.dart';
 import 'package:mania/resources/colours.dart';
 import 'package:mania/resources/dimensions.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class LoginScreen extends BaseStatefulWidget {
-  LoginScreen({Key? key}) : super(key: key);
+  const LoginScreen({Key? key}) : super(key: key);
 
-  static nextScreen(BuildContext context) {
+  static void nextScreen(BuildContext context) {
     Future.delayed(Duration.zero, () {
       if (Registry.isAuth()) {
         Navigator.pushReplacementNamed(context, "/home");
@@ -56,7 +55,7 @@ class _LoginScreenState extends BaseState<LoginScreen> {
               margin: const EdgeInsets.only(top: Dimens.margin, left: Dimens.margin),
               height: 100,
               width: 100,
-              child: Logo(),
+              child: const Logo(),
             ),
             Expanded(
               child: Container(
@@ -64,42 +63,37 @@ class _LoginScreenState extends BaseState<LoginScreen> {
                 margin: const EdgeInsets.all(Dimens.margin),
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Expanded(
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          WhiteText(
-                            trans(context)!.screen_login_title,
+                          ManiaText(
+                            trans(context)?.screen_login_title,
                             bolder: true,
                             fontSize: Dimens.titleSize,
                             textAlign: TextAlign.center,
                           ),
                           Column(
                             children: [
-                              WhiteText(
-                                trans(context)!.screen_login_loginWithTwitchAccount,
+                              ManiaText(
+                                trans(context)?.screen_login_loginWithTwitchAccount,
                                 textAlign: TextAlign.center,
                               ),
-                              SizedBox(height: 20),
-                              RoundedOutline(
+                              const SizedBox(height: 20),
+                              RoundedContainer.size(
                                 onPressed: onTwitchPressed,
-                                height: Dimens.logoSize,
-                                radius: 30,
+                                size: Dimens.logoSize,
                                 padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
-                                  children: [
+                                  children: const [
                                     Text("Se connecter avec"),
                                     SizedBox(width: 10),
-                                    Container(
-                                      child: NormalImage(
-                                        'assets/images/twitch.png',
-                                        height: Dimens.logoSize - 20,
-                                        width: Dimens.logoSize - 20,
-                                      ),
+                                    NormalImage(
+                                      'assets/images/twitch.png',
+                                      height: Dimens.logoSize - 20,
+                                      width: Dimens.logoSize - 20,
                                     ),
                                   ],
                                 ),
@@ -108,15 +102,15 @@ class _LoginScreenState extends BaseState<LoginScreen> {
                           ),
                           Column(
                             children: [
-                              WhiteText(
-                                trans(context)!.screen_login_ifYouDontHaveTwitchAccount,
+                              ManiaText(
+                                trans(context)?.screen_login_ifYouDontHaveTwitchAccount,
                                 textAlign: TextAlign.center,
                               ),
-                              SizedBox(height: 10),
-                              WhiteText(
-                                trans(context)!.text_createAnAccount,
+                              const SizedBox(height: 10),
+                              ManiaText(
+                                trans(context)?.text_createAnAccount,
                                 onPressed: () async {
-                                  String url = Const.twitchUrl;
+                                  const String url = Const.twitchUrl;
                                   await launch(url);
                                   // if (await canLaunch(url))
                                   //   await launch(url);
@@ -141,22 +135,18 @@ class _LoginScreenState extends BaseState<LoginScreen> {
     );
   }
 
-  autoLogin() {
+  void autoLogin() {
     if (Registry.firebaseUser != null || Registry.twitchUser != null) {
       LoginScreen.nextScreen(context);
     }
   }
 
-  onLoginPressed() {
-    print('E-mail');
-  }
+  void onLoginPressed() {}
 
-  onFacebookPressed() {
-    print('Facebook');
-  }
+  void onFacebookPressed() {}
 
-  onGooglePressed() {
-    FirebaseHandler.signInWithGoogle(context: context).then((user) {
+  void onGooglePressed() {
+    FirebaseHandler.signInWithGoogle(context: context, mounted: mounted).then((user) {
       if (user != null) {
         Registry.firebaseUser = user;
 
@@ -165,7 +155,7 @@ class _LoginScreenState extends BaseState<LoginScreen> {
     });
   }
 
-  onTwitchPressed() {
+  void onTwitchPressed() {
     TwitchHandler.showTwitchModal(context: context).then((twitchCode) {
       TwitchHandler.loginToTwitchWithCode(twitchCode).then((authResponse) {
         if (authResponse != null) {
@@ -181,7 +171,5 @@ class _LoginScreenState extends BaseState<LoginScreen> {
     });
   }
 
-  onSignUpPressed() {
-    print('Sign up');
-  }
+  void onSignUpPressed() {}
 }

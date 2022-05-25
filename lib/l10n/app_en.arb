@@ -1,5 +1,6 @@
 {
   "@@locale": "en",
+  "app_name": "Mania",
   "screen_related__": "--------------------------------------------------",
   "screen_login_title": "Connection",
   "screen_login_loginWithTwitchAccount": "Login with yout Twitch account",
@@ -7,7 +8,9 @@
   "screen_mainMenu_title": "ania",
   "screen_followings_title": "{pseudo}'s followings",
   "screen_followers_title": "{pseudo}'s followers",
+  "screen_profile_title": "{pseudo}'s profile",
   "screen_editProfile_title": "Profile edition",
+  "screen_mainMenu_zeroNotification": "You don't have any notifications yet. Try to follow other users using this button",
   "text____________": "--------------------------------------------------",
   "text_createAnAccount": "Create an account",
   "text_editProfile": "Edit profile",
@@ -16,8 +19,9 @@
   "text_emptyList": "Empty list",
   "text_errorOccurred": "An error occurred",
   "text_profile": "Profile",
-  "text_light_mode": "Light mode",
-  "text_dark_mode": "Dark mode",
+  "text_systemMode": "System mode",
+  "text_darkMode": "Dark mode",
+  "text_lightMode": "Light mode",
   "text_settings": "Settings",
   "text_giveaways": "Giveaways",
   "text_game_viewers": "Game viewers",
@@ -30,6 +34,7 @@
   "text_publication": "Publication",
   "text_publish": "Publish",
   "text_save": "Save",
+  "text_onlyTenLastNotificationsAreDisplayed": "Only 10 last notifications are displayed",
   "placeholders____": "--------------------------------------------------",
   "placeholder_writeYourMessage": "Write a message...",
   "placeholder_writeADescription": "Write a description",
@@ -51,6 +56,15 @@
   },
   "@screen_followers_title": {
     "description": "Followers list",
+    "placeholders": {
+      "pseudo": {
+        "type": "String",
+        "example": "Bob"
+      }
+    }
+  },
+  "@screen_profile_title": {
+    "description": "Profile",
     "placeholders": {
       "pseudo": {
         "type": "String",

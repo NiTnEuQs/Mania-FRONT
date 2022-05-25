@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mania/main.dart';
-import 'package:mania/mixins/MixinLocalizator.dart';
+import 'package:mania/mixins/mixin_localizator.dart';
 
 abstract class BaseStatefulWidget extends ConsumerStatefulWidget {
-  BaseStatefulWidget({Key? key}) : super(key: key);
+  const BaseStatefulWidget({Key? key}) : super(key: key);
 }
 
 abstract class BaseState<T extends ConsumerStatefulWidget> extends ConsumerState<T> with Localizator {}

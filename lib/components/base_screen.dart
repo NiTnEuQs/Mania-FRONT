@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mania/components/mania_text.dart';
 import 'package:mania/components/material_hero.dart';
-import 'package:mania/components/whitetext.dart';
 import 'package:mania/resources/dimensions.dart';
-import 'package:mania/resources/herotags.dart';
+import 'package:mania/resources/hero_tags.dart';
 
 class BaseScreen extends StatelessWidget {
   const BaseScreen({Key? key, this.title, this.child}) : super(key: key);
@@ -18,8 +18,8 @@ class BaseScreen extends StatelessWidget {
           expandedHeight: 150.0,
           flexibleSpace: FlexibleSpaceBar(
             title: MaterialHero(
-              tag: HeroTags.TITLE,
-              child: WhiteText(
+              tag: HeroTags.title,
+              child: ManiaText(
                 title ?? '',
                 textAlign: TextAlign.center,
                 fontSize: Dimens.appbarTitleSize,
